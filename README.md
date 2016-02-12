@@ -6,10 +6,20 @@ dockerhub-webhook-forwarder
 [![Build Status](https://travis-ci.org/julian-eggers/dockerhub-webhook-forwarder.svg?branch=master)](https://travis-ci.org/julian-eggers/dockerhub-webhook-forwarder)
 
 
-# Docker
+## Docker
+```
 docker run \
 -p 8080:8080 \
 -e rabbitmq_addresses=localhost \
 -e rabbitmq_username=guest \
 -e rabbitmq_password=guest \
 jeggers/dockerhub-webhook-forwarder
+```
+
+| Environment variable  | Required | Default |
+| ------------- | ------------- | ------------- |
+| rabbitmq_addresses  | yes  | localhost |
+| rabbitmq_username  | yes  | guest |
+| rabbitmq_password  | yes  | guest |
+| rabbitmq_exchange  | no  | io.docker |
+| rabbitmq_routingkey  | no  | webhookEvent |
