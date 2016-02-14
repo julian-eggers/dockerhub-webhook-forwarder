@@ -23,3 +23,9 @@ jeggers/dockerhub-webhook-forwarder
 | rabbitmq_password  | yes  | guest |
 | rabbitmq_exchange  | no  | io.docker |
 | rabbitmq_routingkey  | no  | webhookEvent |
+
+
+## Message-Content
+```xml
+<webhookEvent namespace="jeggers" repository="jeggers/dockerhub-webhook-forwarder" tag="latest" />
+```
