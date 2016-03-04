@@ -11,11 +11,4 @@ ENV JAVA_OPTS				""
 
 COPY dockerhub-webhook-forwarder.jar dockerhub-webhook-forwarder.jar
 
-ENTRYPOINT ["java", \ 
-"-Dspring.rabbitmq.addresses=${rabbitmq_addresses}", \
-"-Dspring.rabbitmq.username=${rabbitmq_username}", \
-"-Dspring.rabbitmq.password=${rabbitmq_password}", \
-"-Dspring.rabbitmq.exchange=${rabbitmq_exchange}", \
-"-Dspring.rabbitmq.routingkey=${rabbitmq_routingkey} ${JAVA_OPTS}", \
-"-jar", \
-"/dockerhub-webhook-forwarder.jar"]
+CMD ["/bin/sh", "-c", "java -Dspring.rabbitmq.addresses=${rabbitmq_addresses} -Dspring.rabbitmq.username=${rabbitmq_username} -Dspring.rabbitmq.password=${rabbitmq_password} -Dspring.rabbitmq.exchange=${rabbitmq_exchange} -Dspring.rabbitmq.routingkey=${rabbitmq_routingkey} -Dfile.encoding=UTF-8 -Djava.security.egd=file:/dev/./urandom ${JAVA_OPTS} -jar dockerhub-webhook-forwarder.jar"]
