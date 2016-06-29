@@ -23,13 +23,13 @@ public class DefaultWebhookEventService implements WebhookEventService
     @Override
     public void publishEvent(WebhookEvent event)
     {
-        webhookEventTemplate.convertAndSend(event);
-
         if (event.getOriginalJson() != null)
         {
-            webhookEventOriginalTemplate.send(MessageBuilder.withBody(event.getOriginalJson().getBytes()).build());
+            webhookEventOriginalTemplate.send(MessageBuilder.withBody(event.getOriginalJson().getBytes()).setContentType("application/json").build());
         }
 
+        event.setOriginalJson(null);
+        webhookEventTemplate.convertAndSend(event);
         log.info("WebhookEvent published (" + event + ")");
     }
 }

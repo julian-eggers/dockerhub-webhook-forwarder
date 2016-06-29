@@ -6,7 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.easymock.PowerMock;
-import org.powermock.api.easymock.annotation.Mock;
+import org.powermock.api.easymock.annotation.MockStrict;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
@@ -23,10 +23,10 @@ public class DefaultWebhookEventServiceTest
 {
     private WebhookEventService webhookEventService;
 
-    @Mock
+    @MockStrict
     private RabbitTemplate webhookEventTemplate;
 
-    @Mock
+    @MockStrict
     private RabbitTemplate webhookEventOriginalTemplate;
 
     @Before
@@ -41,24 +41,36 @@ public class DefaultWebhookEventServiceTest
     public void testPublishEvent()
     {
         webhookEventTemplate.convertAndSend(EasyMock.anyObject(WebhookEvent.class));
-        PowerMock.expectLastCall();
+        PowerMock.expectLastCall().andAnswer(() ->
+        {
+            WebhookEvent webhookEvent = (WebhookEvent) EasyMock.getCurrentArguments()[0];
+            Assert.assertNull(webhookEvent.getOriginalJson());
+            return null;
+        });
 
         PowerMock.replayAll();
-        webhookEventService.publishEvent(new WebhookEvent());
+        WebhookEvent webhookEvent = new WebhookEvent();
+        webhookEventService.publishEvent(webhookEvent);
         PowerMock.verifyAll();
     }
 
     @Test
     public void testPublishOriginalEvent()
     {
-        webhookEventTemplate.convertAndSend(EasyMock.anyObject(WebhookEvent.class));
-        PowerMock.expectLastCall();
-
         webhookEventOriginalTemplate.send(EasyMock.anyObject(Message.class));
         PowerMock.expectLastCall().andAnswer(() ->
         {
             Message message = (Message) EasyMock.getCurrentArguments()[0];
             Assert.assertEquals("Testtest", new String(message.getBody()));
+            Assert.assertEquals("application/json", message.getMessageProperties().getContentType());
+            return null;
+        });
+
+        webhookEventTemplate.convertAndSend(EasyMock.anyObject(WebhookEvent.class));
+        PowerMock.expectLastCall().andAnswer(() ->
+        {
+            WebhookEvent webhookEvent = (WebhookEvent) EasyMock.getCurrentArguments()[0];
+            Assert.assertNull(webhookEvent.getOriginalJson());
             return null;
         });
 

@@ -5,7 +5,7 @@
   <name>dockerhub-webhook-forwarder</name>
   <description></description>
   <url>https://github.com/julian-eggers/dockerhub-webhook-forwarder</url>
-  <version>0.2.1-RELEASE</version>
+  <version>0.2.2-RELEASE</version>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
