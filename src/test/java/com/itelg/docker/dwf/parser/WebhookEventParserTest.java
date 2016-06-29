@@ -18,5 +18,6 @@ public class WebhookEventParserTest
         Assert.assertEquals("dockerhub-webhook-forwarder", event.getRepositoryName());
         Assert.assertEquals("latest", event.getTag());
         Assert.assertEquals("jeggers/dockerhub-webhook-forwarder:latest", event.getImage());
+        Assert.assertNotNull(event.getOriginalJson());
     }
 }

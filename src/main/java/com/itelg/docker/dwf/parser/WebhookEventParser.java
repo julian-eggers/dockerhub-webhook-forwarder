@@ -16,6 +16,7 @@ public class WebhookEventParser
         event.setRepositoryName(object.getJSONObject("repository").getString("name"));
         event.setTag(object.getJSONObject("push_data").getString("tag"));
         event.setImage(event.getNamespace() + "/" + event.getRepositoryName() + ":" + event.getTag());
+        event.setOriginalJson(json);
 
         return event;
     }

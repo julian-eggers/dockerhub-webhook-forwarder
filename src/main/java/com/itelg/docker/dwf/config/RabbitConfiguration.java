@@ -5,38 +5,38 @@ import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.support.converter.MarshallingMessageConverter;
-import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.oxm.xstream.XStreamMarshaller;
-
 
 @Configuration
 public class RabbitConfiguration
 {
     @Autowired
     private ConnectionFactory connectionFactory;
-    
-    @Autowired
-    private XStreamMarshaller xStreamMarshaller;
-    
+
     @NotBlank
-    @Value("${spring.rabbitmq.exchange}")
+    @Value("${spring.rabbitmq.exchange.name}")
     private String exchangeName;
-    
+
     @NotBlank
-    @Value("${spring.rabbitmq.routingkey}")
-    private String routingKey;
-    
+    @Value("${spring.rabbitmq.routing-key.prefix}")
+    private String routingKeyPrefix;
+
     @Bean
     public RabbitAdmin rabbitAdmin()
     {
         return new RabbitAdmin(connectionFactory);
     }
-    
+
+    @Bean
+    public RabbitTemplate rabbitTemplate()
+    {
+        return new RabbitTemplate(connectionFactory);
+    }
+
     @Bean
     public TopicExchange eventExchange()
     {
@@ -44,24 +44,23 @@ public class RabbitConfiguration
         rabbitAdmin().declareExchange(exchange);
         return exchange;
     }
-    
+
     @Bean
-    public RabbitTemplate eventPublishTemplate()
+    public RabbitTemplate webhookEventTemplate()
     {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
-        rabbitTemplate.setMessageConverter(marshallingMessageConverter());
         rabbitTemplate.setExchange(exchangeName);
-        rabbitTemplate.setRoutingKey(routingKey);
-        
+        rabbitTemplate.setRoutingKey(routingKeyPrefix + ".compressed");
+        rabbitTemplate.setMessageConverter(new Jackson2JsonMessageConverter());
         return rabbitTemplate;
     }
-    
+
     @Bean
-    public MessageConverter marshallingMessageConverter()
+    public RabbitTemplate webhookEventOriginalTemplate()
     {
-        MarshallingMessageConverter messageConverter = new MarshallingMessageConverter();
-        messageConverter.setMarshaller(xStreamMarshaller);
-        messageConverter.setUnmarshaller(xStreamMarshaller);
-        return messageConverter;
+        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+        rabbitTemplate.setExchange(exchangeName);
+        rabbitTemplate.setRoutingKey(routingKeyPrefix + ".original");
+        return rabbitTemplate;
     }
 }

@@ -1,5 +1,6 @@
 package com.itelg.docker.dwf.service.impl;
 
+import org.springframework.amqp.core.MessageBuilder;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,12 +15,21 @@ import lombok.extern.slf4j.Slf4j;
 public class DefaultWebhookEventService implements WebhookEventService
 {
     @Autowired
-    private RabbitTemplate eventPublishTemplate;
+    private RabbitTemplate webhookEventTemplate;
+
+    @Autowired
+    private RabbitTemplate webhookEventOriginalTemplate;
 
     @Override
     public void publishEvent(WebhookEvent event)
     {
-        eventPublishTemplate.convertAndSend(event);
+        webhookEventTemplate.convertAndSend(event);
+
+        if (event.getOriginalJson() != null)
+        {
+            webhookEventOriginalTemplate.send(MessageBuilder.withBody(event.getOriginalJson().getBytes()).build());
+        }
+
         log.info("WebhookEvent published (" + event + ")");
     }
 }

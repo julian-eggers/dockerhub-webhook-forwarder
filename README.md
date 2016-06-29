@@ -23,13 +23,18 @@ jeggers/dockerhub-webhook-forwarder
 | RABBITMQ_USERNAME | yes | guest |
 | RABBITMQ_PASSWORD | yes | guest |
 | RABBITMQ_EXCHANGE | no | io.docker |
-| RABBITMQ_ROUTINGKEY | no | webhookEvent |
+| RABBITMQ_ROUTINGKEYPREFIX | no | webhookEvent |
 | HTTP_PORT | no | 8080 |
 | MAX_HEAP | no | 100M |
 | JAVA_OPTS | no |  |
 
 
 ## Message-Content
-```xml
-<webhookEvent namespace="jeggers" repository="dockerhub-webhook-forwarder" tag="latest" image="jeggers/dockerhub-webhook-forwarder:latest" />
+```json
+{
+  "namespace" : "jeggers",
+  "repositoryName" : "dockerhub-webhook-forwarder",
+  "tag" : "latest",
+  "image" : "jeggers/dockerhub-webhook-forwarder:latest"
+}
 ```
