@@ -11,22 +11,25 @@ dockerhub-webhook-forwarder
 ```
 docker run \
 -p 8080:8080 \
--e rabbitmq_addresses=localhost \
--e rabbitmq_username=guest \
--e rabbitmq_password=guest \
+-e RABBITMQ_ADDRESSES=localhost \
+-e RABBITMQ_USERNAME=guest \
+-e RABBITMQ_PASSWORD=guest \
 jeggers/dockerhub-webhook-forwarder
 ```
 
 | Environment variable  | Required | Default |
-| ------------- | ------------- | ------------- |
-| rabbitmq_addresses  | yes  | localhost |
-| rabbitmq_username  | yes  | guest |
-| rabbitmq_password  | yes  | guest |
-| rabbitmq_exchange  | no  | io.docker |
-| rabbitmq_routingkey  | no  | webhookEvent |
+| - | - | - |
+| RABBITMQ_ADDRESSES | yes | localhost |
+| RABBITMQ_USERNAME | yes | guest |
+| RABBITMQ_PASSWORD | yes | guest |
+| RABBITMQ_EXCHANGE | no | io.docker |
+| RABBITMQ_ROUTINGKEY | no | webhookEvent |
+| HTTP_PORT | no | 8080 |
+| MAX_HEAP | no | 100M |
+| JAVA_OPTS | no |  |
 
 
 ## Message-Content
 ```xml
-<webhookEvent namespace="jeggers" repository="jeggers/dockerhub-webhook-forwarder" tag="latest" />
+<webhookEvent namespace="jeggers" repository="dockerhub-webhook-forwarder" tag="latest" image="jeggers/dockerhub-webhook-forwarder:latest" />
 ```

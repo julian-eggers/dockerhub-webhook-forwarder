@@ -15,7 +15,8 @@ public class WebhookEventParserTest
         String json = IOUtils.toString(new ClassPathResource("webhookevent.json").getInputStream());
         WebhookEvent event = new WebhookEventParser().parse(json);
         Assert.assertEquals("jeggers", event.getNamespace());
-        Assert.assertEquals("jeggers/dockerhub-webhook-forwarder", event.getRepository());
+        Assert.assertEquals("dockerhub-webhook-forwarder", event.getRepositoryName());
         Assert.assertEquals("latest", event.getTag());
+        Assert.assertEquals("jeggers/dockerhub-webhook-forwarder:latest", event.getImage());
     }
 }

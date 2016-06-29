@@ -16,7 +16,7 @@ public class WebhookEventRestController
 {
     @Autowired
     private WebhookEventService webhookEventService;
-    
+
     @Autowired
     private WebhookEventParser webhookEventParser;
 
@@ -27,14 +27,15 @@ public class WebhookEventRestController
         webhookEventService.publishEvent(event);
         return event;
     }
-    
+
     @RequestMapping(value = "force", method = RequestMethod.GET)
     public WebhookEvent force(@RequestParam String namespace, @RequestParam String repository, @RequestParam String tag)
     {
         WebhookEvent event = new WebhookEvent();
         event.setNamespace(namespace);
-        event.setRepository(repository);
+        event.setRepositoryName(repository);
         event.setTag(tag);
+        event.setImage(event.getNamespace() + "/" + event.getRepositoryName() + ":" + event.getTag());
         webhookEventService.publishEvent(event);
         return event;
     }

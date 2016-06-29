@@ -13,8 +13,9 @@ public class WebhookEventParser
         JSONObject object = new JSONObject(json);
         WebhookEvent event = new WebhookEvent();
         event.setNamespace(object.getJSONObject("repository").getString("namespace"));
-        event.setRepository(object.getJSONObject("repository").getString("repo_name"));
+        event.setRepositoryName(object.getJSONObject("repository").getString("name"));
         event.setTag(object.getJSONObject("push_data").getString("tag"));
+        event.setImage(event.getNamespace() + "/" + event.getRepositoryName() + ":" + event.getTag());
 
         return event;
     }

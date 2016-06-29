@@ -5,7 +5,7 @@
   <name>dockerhub-webhook-forwarder</name>
   <description></description>
   <url>https://github.com/julian-eggers/dockerhub-webhook-forwarder</url>
-  <version>0.1.2-RELEASE</version>
+  <version>0.2.0-RELEASE</version>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -19,7 +19,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>1.3.3.RELEASE</version>
+    <version>1.3.5.RELEASE</version>
   </parent>
 
   <scm>
@@ -58,44 +58,6 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
       </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-source-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>attach-sources</id>
-            <goals>
-              <goal>jar-no-fork</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>attach-javadocs</id>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-gpg-plugin</artifactId>
-        <version>1.6</version>
-        <executions>
-          <execution>
-            <id>sign-artifacts</id>
-            <phase>verify</phase>
-            <goals>
-              <goal>sign</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
       <!-- TEST AND COVERAGE -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -118,48 +80,29 @@
       </plugin>
       <!-- DEPLOYMENT -->
       <plugin>
-        <artifactId>maven-release-plugin</artifactId>
-        <version>2.5.3</version>
-        <configuration>
-          <autoVersionSubmodules>true</autoVersionSubmodules>
-          <useReleaseProfile>false</useReleaseProfile>
-          <releaseProfiles>release</releaseProfiles>
-          <goals>deploy</goals>
-        </configuration>
-        <dependencies>
-          <dependency>
-            <groupId>org.apache.maven.scm</groupId>
-            <artifactId>maven-scm-provider-gitexe</artifactId>
-            <version>1.9.4</version>
-          </dependency>
-        </dependencies>
-      </plugin>
-      <plugin>
-        <groupId>de.jutzig</groupId>
-        <artifactId>github-release-plugin</artifactId>
-        <version>1.1.1</version>
-        <executions>
-          <execution>
-            <id>github-upload</id>
-            <phase>deploy</phase>
-            <goals>
-              <goal>release</goal>
-            </goals>
-            <configuration>
-              <releaseName>${project.version}</releaseName>
-              <tag>${project.version}</tag>
-              <artifact>${project.build.directory}/${project.artifactId}-${project.version}.jar</artifact>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <groupId>com.spotify</groupId>
         <artifactId>docker-maven-plugin</artifactId>
-        <version>0.4.1</version>
+        <version>0.4.10</version>
         <configuration>
+          <serverId>dockerhub-jeggers</serverId>
           <imageName>jeggers/${project.artifactId}</imageName>
-          <dockerDirectory>src/main/docker</dockerDirectory>
+          <forceTags>true</forceTags>
+          <imageTags>
+            <imageTag>${project.version}</imageTag>
+            <imageTag>latest</imageTag>
+          </imageTags>
+          <baseImage>jeanblanchard/java:serverjre-8</baseImage>
+          <env>
+            <RABBITMQ_ADDRESSES>localhost</RABBITMQ_ADDRESSES>
+            <RABBITMQ_USERNAME>guest</RABBITMQ_USERNAME>
+            <RABBITMQ_PASSWORD>guest</RABBITMQ_PASSWORD>
+            <RABBITMQ_EXCHANGE>io.docker</RABBITMQ_EXCHANGE>
+            <RABBITMQ_ROUTINGKEY>webHookEvent</RABBITMQ_ROUTINGKEY>
+            <HTTP_PORT>8080</HTTP_PORT>
+            <MAX_HEAP>100M</MAX_HEAP>
+            <JAVA_OPTS>-Dfoo=bar</JAVA_OPTS>
+          </env>
+          <cmd>["/bin/sh", "-c", "java -Dspring.rabbitmq.addresses=${RABBITMQ_ADDRESSES} -Dspring.rabbitmq.username=${RABBITMQ_USERNAME} -Dspring.rabbitmq.password=${RABBITMQ_PASSWORD} -Dspring.rabbitmq.exchange=${RABBITMQ_EXCHANGE} -Dspring.rabbitmq.routingkey=${RABBITMQ_ROUTINGKEY} -Dserver.port=${HTTP_PORT} -Dfile.encoding=UTF-8 -Xmx${MAX_HEAP} ${JAVA_OPTS} -jar /${project.build.finalName}.${project.packaging}"]</cmd>
           <resources>
             <resource>
               <targetPath>/</targetPath>
@@ -167,7 +110,6 @@
               <include>${project.build.finalName}.${project.packaging}</include>
             </resource>
           </resources>
-          <serverId>dockerhub-jeggers</serverId>
         </configuration>
       </plugin>
     </plugins>
@@ -198,7 +140,7 @@
     <dependency>
       <groupId>com.thoughtworks.xstream</groupId>
       <artifactId>xstream</artifactId>
-      <version>1.4.8</version>
+      <version>1.4.9</version>
     </dependency>
 
     <!-- Testing -->
@@ -239,6 +181,12 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-amqp</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.16.8</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 </project>

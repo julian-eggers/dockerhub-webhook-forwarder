@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.easymock.PowerMock;
 import org.powermock.api.easymock.annotation.Mock;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 import org.springframework.core.io.ClassPathResource;
@@ -17,16 +18,17 @@ import com.itelg.docker.dwf.parser.WebhookEventParser;
 import com.itelg.docker.dwf.service.WebhookEventService;
 
 @RunWith(PowerMockRunner.class)
+@PowerMockIgnore("javax.management.*")
 public class WebhookEventRestControllerTest
 {
     private WebhookEventRestController webhookEventRestController;
-    
+
     @Mock
     private WebhookEventParser webhookEventParser;
-    
+
     @Mock
     private WebhookEventService webhookEventService;
-    
+
     @Before
     public void before()
     {
@@ -39,40 +41,43 @@ public class WebhookEventRestControllerTest
     public void testReceive() throws Exception
     {
         webhookEventParser.parse(EasyMock.anyString());
-        PowerMock.expectLastCall().andAnswer(() -> 
+        PowerMock.expectLastCall().andAnswer(() ->
         {
             WebhookEvent event = new WebhookEvent();
             event.setNamespace("jeggers");
-            event.setRepository("jeggers/dockerhub-webhook-forwarder");
+            event.setRepositoryName("dockerhub-webhook-forwarder");
             event.setTag("latest");
+            event.setImage("jeggers/dockerhub-webhook-forwarder:latest");
             return event;
         });
-        
+
         webhookEventService.publishEvent(EasyMock.anyObject(WebhookEvent.class));
         PowerMock.expectLastCall();
-        
+
         PowerMock.replayAll();
         String json = IOUtils.toString(new ClassPathResource("webhookevent.json").getInputStream());
         WebhookEvent event = webhookEventRestController.receive(json);
         PowerMock.verifyAll();
 
         Assert.assertEquals("jeggers", event.getNamespace());
-        Assert.assertEquals("jeggers/dockerhub-webhook-forwarder", event.getRepository());
+        Assert.assertEquals("dockerhub-webhook-forwarder", event.getRepositoryName());
         Assert.assertEquals("latest", event.getTag());
+        Assert.assertEquals("jeggers/dockerhub-webhook-forwarder:latest", event.getImage());
     }
-    
+
     @Test
     public void testForce() throws Exception
     {
         webhookEventService.publishEvent(EasyMock.anyObject(WebhookEvent.class));
         PowerMock.expectLastCall();
-        
+
         PowerMock.replayAll();
-        WebhookEvent event = webhookEventRestController.force("jeggers", "jeggers/dockerhub-webhook-forwarder", "latest");
+        WebhookEvent event = webhookEventRestController.force("jeggers", "dockerhub-webhook-forwarder", "latest");
         PowerMock.verifyAll();
-        
+
         Assert.assertEquals("jeggers", event.getNamespace());
-        Assert.assertEquals("jeggers/dockerhub-webhook-forwarder", event.getRepository());
+        Assert.assertEquals("dockerhub-webhook-forwarder", event.getRepositoryName());
         Assert.assertEquals("latest", event.getTag());
+        Assert.assertEquals("jeggers/dockerhub-webhook-forwarder:latest", event.getImage());
     }
 }
