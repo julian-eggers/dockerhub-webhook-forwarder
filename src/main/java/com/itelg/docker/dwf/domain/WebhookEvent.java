@@ -1,5 +1,7 @@
 package com.itelg.docker.dwf.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Data;
 import lombok.ToString;
 
@@ -15,5 +17,6 @@ public class WebhookEvent
 
     private String image;
 
+    @JsonIgnore
     private String originalJson;
 }
