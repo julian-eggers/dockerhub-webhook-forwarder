@@ -5,7 +5,7 @@
   <name>dockerhub-webhook-forwarder</name>
   <description></description>
   <url>https://github.com/julian-eggers/dockerhub-webhook-forwarder</url>
-  <version>0.2.3-RELEASE</version>
+  <version>0.3.0-RELEASE</version>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -93,6 +93,7 @@
           </imageTags>
           <baseImage>jeanblanchard/java:serverjre-8</baseImage>
           <env>
+            <TOKEN></TOKEN>
             <RABBITMQ_ADDRESSES>localhost</RABBITMQ_ADDRESSES>
             <RABBITMQ_USERNAME>guest</RABBITMQ_USERNAME>
             <RABBITMQ_PASSWORD>guest</RABBITMQ_PASSWORD>
@@ -102,7 +103,7 @@
             <MAX_HEAP>100M</MAX_HEAP>
             <JAVA_OPTS>-Dfoo=bar</JAVA_OPTS>
           </env>
-          <cmd>["/bin/sh", "-c", "java -Dspring.rabbitmq.addresses=${RABBITMQ_ADDRESSES} -Dspring.rabbitmq.username=${RABBITMQ_USERNAME} -Dspring.rabbitmq.password=${RABBITMQ_PASSWORD} -Dspring.rabbitmq.exchange.name=${RABBITMQ_EXCHANGE} -Dspring.rabbitmq.routing-key.prefix=${RABBITMQ_ROUTINGKEYPREFIX} -Dserver.port=${HTTP_PORT} -Dfile.encoding=UTF-8 -Xmx${MAX_HEAP} ${JAVA_OPTS} -jar /${project.build.finalName}.${project.packaging}"]</cmd>
+          <cmd>["/bin/sh", "-c", "java -Drequest.token=${TOKEN} -Dspring.rabbitmq.addresses=${RABBITMQ_ADDRESSES} -Dspring.rabbitmq.username=${RABBITMQ_USERNAME} -Dspring.rabbitmq.password=${RABBITMQ_PASSWORD} -Dspring.rabbitmq.exchange.name=${RABBITMQ_EXCHANGE} -Dspring.rabbitmq.routing-key.prefix=${RABBITMQ_ROUTINGKEYPREFIX} -Dserver.port=${HTTP_PORT} -Dfile.encoding=UTF-8 -Xmx${MAX_HEAP} ${JAVA_OPTS} -jar /${project.build.finalName}.${project.packaging}"]</cmd>
           <resources>
             <resource>
               <targetPath>/</targetPath>

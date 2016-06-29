@@ -19,17 +19,20 @@ jeggers/dockerhub-webhook-forwarder
 
 | Environment variable | Required | Default |
 | -------------------- | -------- | ------- |
+| TOKEN | no |  |
 | RABBITMQ_ADDRESSES | yes | localhost |
 | RABBITMQ_USERNAME | yes | guest |
 | RABBITMQ_PASSWORD | yes | guest |
 | RABBITMQ_EXCHANGE | no | io.docker |
-| RABBITMQ_ROUTINGKEYPREFIX | no | webhookEvent |
+| RABBITMQ_ROUTINGKEYPREFIX | no | webhookEvent (results in "webhookEvent.compressed" and "webhookEvent.original") |
 | HTTP_PORT | no | 8080 |
 | MAX_HEAP | no | 100M |
 | JAVA_OPTS | no |  |
 
 
 ## Message-Content
+
+### Compressed (Routing-Key: webhookEvent.compressed)
 ```json
 {
   "namespace" : "jeggers",
@@ -38,3 +41,6 @@ jeggers/dockerhub-webhook-forwarder
   "image" : "jeggers/dockerhub-webhook-forwarder:latest"
 }
 ```
+
+### Original (Routing-Key: webhookEvent.original)
+[Dockerhub: Webhook-Example](https://docs.docker.com/docker-hub/webhooks/)

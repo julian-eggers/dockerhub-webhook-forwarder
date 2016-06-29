@@ -15,6 +15,7 @@ import org.springframework.core.io.ClassPathResource;
 
 import com.itelg.docker.dwf.domain.WebhookEvent;
 import com.itelg.docker.dwf.parser.WebhookEventParser;
+import com.itelg.docker.dwf.rest.domain.AccessDeniedException;
 import com.itelg.docker.dwf.service.WebhookEventService;
 
 @RunWith(PowerMockRunner.class)
@@ -35,6 +36,7 @@ public class WebhookEventRestControllerTest
         webhookEventRestController = new WebhookEventRestController();
         Whitebox.setInternalState(webhookEventRestController, webhookEventService);
         Whitebox.setInternalState(webhookEventRestController, webhookEventParser);
+        Whitebox.setInternalState(webhookEventRestController, "token", "");
     }
 
     @Test
@@ -56,7 +58,7 @@ public class WebhookEventRestControllerTest
 
         PowerMock.replayAll();
         String json = IOUtils.toString(new ClassPathResource("webhookevent.json").getInputStream());
-        WebhookEvent event = webhookEventRestController.receive(json);
+        WebhookEvent event = webhookEventRestController.receive(null, json);
         PowerMock.verifyAll();
 
         Assert.assertEquals("jeggers", event.getNamespace());
@@ -72,12 +74,33 @@ public class WebhookEventRestControllerTest
         PowerMock.expectLastCall();
 
         PowerMock.replayAll();
-        WebhookEvent event = webhookEventRestController.force("jeggers", "dockerhub-webhook-forwarder", "latest");
+        WebhookEvent event = webhookEventRestController.force(null, "jeggers", "dockerhub-webhook-forwarder", "latest");
         PowerMock.verifyAll();
 
         Assert.assertEquals("jeggers", event.getNamespace());
         Assert.assertEquals("dockerhub-webhook-forwarder", event.getRepositoryName());
         Assert.assertEquals("latest", event.getTag());
         Assert.assertEquals("jeggers/dockerhub-webhook-forwarder:latest", event.getImage());
+    }
+
+    @Test
+    public void testValidateTokenValid()
+    {
+        Whitebox.setInternalState(webhookEventRestController, "token", "123");
+        webhookEventRestController.valideToken("123");
+    }
+
+    @Test
+    public void testValidateTokenNotConfigured()
+    {
+        Whitebox.setInternalState(webhookEventRestController, "token", "");
+        webhookEventRestController.valideToken("123");
+    }
+
+    @Test(expected = AccessDeniedException.class)
+    public void testValidateTokenNotValid()
+    {
+        Whitebox.setInternalState(webhookEventRestController, "token", "321");
+        webhookEventRestController.valideToken("123");
     }
 }
