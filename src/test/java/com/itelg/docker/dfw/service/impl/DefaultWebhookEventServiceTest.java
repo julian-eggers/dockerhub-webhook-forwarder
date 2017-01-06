@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.easymock.PowerMock;
+import org.powermock.api.easymock.annotation.Mock;
 import org.powermock.api.easymock.annotation.MockStrict;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -26,7 +27,7 @@ public class DefaultWebhookEventServiceTest
     @MockStrict
     private RabbitTemplate webhookEventTemplate;
 
-    @MockStrict
+    @Mock
     private RabbitTemplate webhookEventOriginalTemplate;
 
     @Before

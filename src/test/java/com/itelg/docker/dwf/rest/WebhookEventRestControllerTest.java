@@ -1,5 +1,7 @@
 package com.itelg.docker.dwf.rest;
 
+import java.nio.charset.Charset;
+
 import org.apache.commons.io.IOUtils;
 import org.easymock.EasyMock;
 import org.junit.Assert;
@@ -57,7 +59,7 @@ public class WebhookEventRestControllerTest
         PowerMock.expectLastCall();
 
         PowerMock.replayAll();
-        String json = IOUtils.toString(new ClassPathResource("webhookevent.json").getInputStream());
+        String json = IOUtils.toString(new ClassPathResource("webhookevent.json").getInputStream(), Charset.forName("UTF-8"));
         WebhookEvent event = webhookEventRestController.receive(null, json);
         PowerMock.verifyAll();
 
