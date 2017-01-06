@@ -33,9 +33,6 @@ public class DefaultWebhookEventServiceTest
     @Before
     public void before()
     {
-        System.out.println("test");
-        System.out.println(webhookEventTemplate);
-        System.out.println(webhookEventOriginalTemplate);
         webhookEventService = new DefaultWebhookEventService();
         Whitebox.setInternalState(webhookEventService, "webhookEventTemplate", webhookEventTemplate);
         Whitebox.setInternalState(webhookEventService, "webhookEventOriginalTemplate", webhookEventOriginalTemplate);
