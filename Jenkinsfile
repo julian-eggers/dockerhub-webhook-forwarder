@@ -7,7 +7,7 @@ node
   
   stage('Compile')
   {
-    sh 'mvn clean compile'
+    sh 'mvn clean package -Dmaven.test.skip=true'
   }
   
   stage('Unit-Tests')
@@ -15,7 +15,7 @@ node
     sh 'mvn test'
   }
   
-  stage('Deploy')
+  stage('Release')
   {
     sh 'mvn docker:build -DpushImageTag'
   }

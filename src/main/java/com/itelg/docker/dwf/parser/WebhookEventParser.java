@@ -1,14 +1,16 @@
 package com.itelg.docker.dwf.parser;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 
 import com.itelg.docker.dwf.domain.WebhookEvent;
 
 @Component
-public class WebhookEventParser
+public class WebhookEventParser extends AbstractJsonConverter<WebhookEvent>
 {
-    public WebhookEvent parse(String json)
+    @Override
+    public WebhookEvent convertJson(String json) throws JSONException
     {
         JSONObject object = new JSONObject(json);
         WebhookEvent event = new WebhookEvent();

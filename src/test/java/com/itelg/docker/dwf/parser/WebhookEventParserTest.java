@@ -15,7 +15,7 @@ public class WebhookEventParserTest
     public void testParse() throws Exception
     {
         String json = IOUtils.toString(new ClassPathResource("webhookevent.json").getInputStream(), Charset.forName("UTF-8"));
-        WebhookEvent event = new WebhookEventParser().parse(json);
+        WebhookEvent event = new WebhookEventParser().convert(json);
         Assert.assertEquals("jeggers", event.getNamespace());
         Assert.assertEquals("dockerhub-webhook-forwarder", event.getRepositoryName());
         Assert.assertEquals("latest", event.getTag());
