@@ -52,7 +52,7 @@ public class WebhookEventRestController
             @RequestBody String json)
     {
         valideToken(token);
-        WebhookEvent event = webhookEventParser.parse(json);
+        WebhookEvent event = webhookEventParser.convert(json);
         webhookEventService.publishEvent(event);
         return event;
     }

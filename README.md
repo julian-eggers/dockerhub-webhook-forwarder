@@ -14,7 +14,7 @@ docker run \
 -e RABBITMQ_ADDRESSES=localhost \
 -e RABBITMQ_USERNAME=guest \
 -e RABBITMQ_PASSWORD=guest \
-jeggers/dockerhub-webhook-forwarder
+jeggers/dockerhub-webhook-forwarder:0.4.1-RELEASE
 ```
 
 | Environment variable | Required | Default |

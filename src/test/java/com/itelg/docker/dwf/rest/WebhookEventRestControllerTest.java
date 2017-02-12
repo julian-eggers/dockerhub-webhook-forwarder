@@ -44,7 +44,7 @@ public class WebhookEventRestControllerTest
     @Test
     public void testReceive() throws Exception
     {
-        webhookEventParser.parse(EasyMock.anyString());
+        webhookEventParser.convert(EasyMock.anyString());
         PowerMock.expectLastCall().andAnswer(() ->
         {
             WebhookEvent event = new WebhookEvent();
