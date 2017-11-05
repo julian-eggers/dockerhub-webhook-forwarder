@@ -15,10 +15,10 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 import org.springframework.core.io.ClassPathResource;
 
-import com.itelg.docker.dwf.domain.WebhookEvent;
+import com.itelg.docker.dwf.domain.WebHookEvent;
 import com.itelg.docker.dwf.parser.WebhookEventParser;
 import com.itelg.docker.dwf.rest.domain.AccessDeniedException;
-import com.itelg.docker.dwf.service.WebhookEventService;
+import com.itelg.docker.dwf.service.WebHookEventService;
 
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore("javax.management.*")
@@ -30,7 +30,7 @@ public class WebhookEventRestControllerTest
     private WebhookEventParser webhookEventParser;
 
     @MockStrict
-    private WebhookEventService webhookEventService;
+    private WebHookEventService webhookEventService;
 
     @Before
     public void before()
@@ -47,7 +47,7 @@ public class WebhookEventRestControllerTest
         webhookEventParser.parse(EasyMock.anyString());
         PowerMock.expectLastCall().andAnswer(() ->
         {
-            WebhookEvent event = new WebhookEvent();
+            WebHookEvent event = new WebHookEvent();
             event.setNamespace("jeggers");
             event.setRepositoryName("dockerhub-webhook-forwarder");
             event.setTag("latest");
@@ -55,12 +55,12 @@ public class WebhookEventRestControllerTest
             return event;
         });
 
-        webhookEventService.publishEvent(EasyMock.anyObject(WebhookEvent.class));
+        webhookEventService.publishEvent(EasyMock.anyObject(WebHookEvent.class));
         PowerMock.expectLastCall();
 
         PowerMock.replayAll();
         String json = IOUtils.toString(new ClassPathResource("webhookevent.json").getInputStream(), Charset.forName("UTF-8"));
-        WebhookEvent event = webhookEventRestController.receive(null, json);
+        WebHookEvent event = webhookEventRestController.receive(null, json);
         PowerMock.verifyAll();
 
         Assert.assertEquals("jeggers", event.getNamespace());
@@ -72,11 +72,11 @@ public class WebhookEventRestControllerTest
     @Test
     public void testForce() throws Exception
     {
-        webhookEventService.publishEvent(EasyMock.anyObject(WebhookEvent.class));
+        webhookEventService.publishEvent(EasyMock.anyObject(WebHookEvent.class));
         PowerMock.expectLastCall();
 
         PowerMock.replayAll();
-        WebhookEvent event = webhookEventRestController.force(null, "jeggers", "dockerhub-webhook-forwarder", "latest");
+        WebHookEvent event = webhookEventRestController.force(null, "jeggers", "dockerhub-webhook-forwarder", "latest");
         PowerMock.verifyAll();
 
         Assert.assertEquals("jeggers", event.getNamespace());

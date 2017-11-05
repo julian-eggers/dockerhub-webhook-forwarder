@@ -14,51 +14,51 @@ import org.powermock.reflect.Whitebox;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
-import com.itelg.docker.dwf.domain.WebhookEvent;
-import com.itelg.docker.dwf.service.WebhookEventService;
-import com.itelg.docker.dwf.service.impl.DefaultWebhookEventService;
+import com.itelg.docker.dwf.domain.WebHookEvent;
+import com.itelg.docker.dwf.service.WebHookEventService;
+import com.itelg.docker.dwf.service.impl.DefaultWebHookEventService;
 
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore("javax.management.*")
-public class DefaultWebhookEventServiceTest
+public class DefaultWebHookEventServiceTest
 {
-    private WebhookEventService webhookEventService;
+    private WebHookEventService webHookEventService;
 
     @MockStrict
-    private RabbitTemplate webhookEventTemplate;
+    private RabbitTemplate webHookEventTemplate;
 
     @Mock
-    private RabbitTemplate webhookEventOriginalTemplate;
+    private RabbitTemplate webHookEventOriginalTemplate;
 
     @Before
     public void before()
     {
-        webhookEventService = new DefaultWebhookEventService();
-        Whitebox.setInternalState(webhookEventService, "webhookEventTemplate", webhookEventTemplate);
-        Whitebox.setInternalState(webhookEventService, "webhookEventOriginalTemplate", webhookEventOriginalTemplate);
+        webHookEventService = new DefaultWebHookEventService();
+        Whitebox.setInternalState(webHookEventService, "webHookEventTemplate", webHookEventTemplate);
+        Whitebox.setInternalState(webHookEventService, "webHookEventOriginalTemplate", webHookEventOriginalTemplate);
     }
 
     @Test
     public void testPublishEvent()
     {
-        webhookEventTemplate.convertAndSend(EasyMock.anyObject(WebhookEvent.class));
+        webHookEventTemplate.convertAndSend(EasyMock.anyObject(WebHookEvent.class));
         PowerMock.expectLastCall().andAnswer(() ->
         {
-            WebhookEvent webhookEvent = (WebhookEvent) EasyMock.getCurrentArguments()[0];
+            WebHookEvent webhookEvent = (WebHookEvent) EasyMock.getCurrentArguments()[0];
             Assert.assertNull(webhookEvent.getOriginalJson());
             return null;
         });
 
         PowerMock.replayAll();
-        WebhookEvent webhookEvent = new WebhookEvent();
-        webhookEventService.publishEvent(webhookEvent);
+        WebHookEvent webhookEvent = new WebHookEvent();
+        webHookEventService.publishEvent(webhookEvent);
         PowerMock.verifyAll();
     }
 
     @Test
     public void testPublishOriginalEvent()
     {
-        webhookEventOriginalTemplate.send(EasyMock.anyObject(Message.class));
+        webHookEventOriginalTemplate.send(EasyMock.anyObject(Message.class));
         PowerMock.expectLastCall().andAnswer(() ->
         {
             Message message = (Message) EasyMock.getCurrentArguments()[0];
@@ -67,18 +67,18 @@ public class DefaultWebhookEventServiceTest
             return null;
         });
 
-        webhookEventTemplate.convertAndSend(EasyMock.anyObject(WebhookEvent.class));
+        webHookEventTemplate.convertAndSend(EasyMock.anyObject(WebHookEvent.class));
         PowerMock.expectLastCall().andAnswer(() ->
         {
-            WebhookEvent webhookEvent = (WebhookEvent) EasyMock.getCurrentArguments()[0];
+            WebHookEvent webhookEvent = (WebHookEvent) EasyMock.getCurrentArguments()[0];
             Assert.assertNull(webhookEvent.getOriginalJson());
             return null;
         });
 
         PowerMock.replayAll();
-        WebhookEvent webhookEvent = new WebhookEvent();
+        WebHookEvent webhookEvent = new WebHookEvent();
         webhookEvent.setOriginalJson("Testtest");
-        webhookEventService.publishEvent(webhookEvent);
+        webHookEventService.publishEvent(webhookEvent);
         PowerMock.verifyAll();
     }
 }

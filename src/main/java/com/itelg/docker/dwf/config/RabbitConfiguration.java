@@ -1,44 +1,63 @@
 package com.itelg.docker.dwf.config;
 
-import org.hibernate.validator.constraints.NotBlank;
+import javax.annotation.PostConstruct;
+
 import org.springframework.amqp.core.TopicExchange;
-import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Configuration
+@ConditionalOnExpression("'${webhookevent.forward.rabbitmq.hosts}' != ''")
+@Slf4j
 public class RabbitConfiguration
 {
-    @Autowired
-    private ConnectionFactory connectionFactory;
+    @Value("${webhookevent.forward.rabbitmq.hosts}")
+    private String rabbitmqAddresses;
 
-    @NotBlank
-    @Value("${spring.rabbitmq.exchange.name}")
+    @Value("${webhookevent.forward.rabbitmq.username}")
+    private String rabbitmqUsername;
+
+    @Value("${webhookevent.forward.rabbitmq.password}")
+    private String rabbitmqPassword;
+
+    @Value("${webhookevent.forward.rabbitmq.exchange.name}")
     private String exchangeName;
 
-    @NotBlank
-    @Value("${spring.rabbitmq.routing-key.prefix}")
+    @Value("${webhookevent.forward.rabbitmq.routing-key.prefix}")
     private String routingKeyPrefix;
+
+    @PostConstruct
+    public void init()
+    {
+        log.info("RabbitMQ-Forwarder activated");
+    }
+
+    @Bean
+    public CachingConnectionFactory connectionFactory()
+    {
+        CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
+        connectionFactory.setAddresses(rabbitmqAddresses);
+        connectionFactory.setUsername(rabbitmqUsername);
+        connectionFactory.setPassword(rabbitmqPassword);
+        return connectionFactory;
+    }
 
     @Bean
     public RabbitAdmin rabbitAdmin()
     {
-        return new RabbitAdmin(connectionFactory);
+        return new RabbitAdmin(connectionFactory());
     }
 
     @Bean
-    public RabbitTemplate rabbitTemplate()
-    {
-        return new RabbitTemplate(connectionFactory);
-    }
-
-    @Bean
-    public TopicExchange eventExchange()
+    public TopicExchange webHookEventExchange()
     {
         TopicExchange exchange = new TopicExchange(exchangeName);
         rabbitAdmin().declareExchange(exchange);
@@ -46,9 +65,9 @@ public class RabbitConfiguration
     }
 
     @Bean
-    public RabbitTemplate webhookEventTemplate()
+    public RabbitTemplate webHookEventTemplate()
     {
-        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory());
         rabbitTemplate.setExchange(exchangeName);
         rabbitTemplate.setRoutingKey(routingKeyPrefix + ".compressed");
         rabbitTemplate.setMessageConverter(new Jackson2JsonMessageConverter());
@@ -56,9 +75,9 @@ public class RabbitConfiguration
     }
 
     @Bean
-    public RabbitTemplate webhookEventOriginalTemplate()
+    public RabbitTemplate webHookEventOriginalTemplate()
     {
-        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory());
         rabbitTemplate.setExchange(exchangeName);
         rabbitTemplate.setRoutingKey(routingKeyPrefix + ".original");
         return rabbitTemplate;
