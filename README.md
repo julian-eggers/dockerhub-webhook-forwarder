@@ -27,7 +27,7 @@ jeggers/dockerhub-webhook-forwarder:latest \
 | --webhookevent.forward.rabbitmq.username | no | guest |
 | --webhookevent.forward.rabbitmq.password | no | guest |
 | --webhookevent.forward.rabbitmq.exchange.name | no | io.docker |
-| --webhookevent.forward.rabbitmq.routing-key.prefix | no | webhookEvent (results in "webhookEvent.compressed" and "webhookEvent.original") |
+| --webhookevent.forward.rabbitmq.routing-key.prefix | no | webHookEvent (results in "webHookEvent.compressed" and "webHookEvent.original") |
 
 
 ## Message-Content
