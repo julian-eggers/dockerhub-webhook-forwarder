@@ -56,7 +56,7 @@ pipeline
         {
             steps
             {
-                sh 'mvn jacoco:report coveralls:report'
+                sh 'mvn clean verify jacoco:report coveralls:report -Dgpg.skip=true'
             }
         } 
     }
