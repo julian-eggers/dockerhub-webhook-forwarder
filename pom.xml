@@ -12,11 +12,15 @@
     <timestamp>${maven.build.timestamp}</timestamp>
     <maven.build.timestamp.format>dd.MM.yyyy HH:mm</maven.build.timestamp.format>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <java.version>1.8</java.version>
+    <java.version>1.9</java.version>
     <!-- Testing -->
     <jacoco.version>0.7.9</jacoco.version>
-    <powermock.version>1.7.3</powermock.version>
+    <powermock.version>2.0.0-beta.5</powermock.version>
     <easymock.version>3.5.1</easymock.version>
+    <!-- Build -->
+    <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
+    <coveralls.version>4.3.0</coveralls.version>
+    <github-release-plugin.version>1.2.0</github-release-plugin.version>
   </properties>
 
   <parent>
@@ -138,6 +142,44 @@
         </configuration>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-gpg-plugin</artifactId>
+        <version>${maven-gpg-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>sign-artifacts</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>sign</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
       </plugin>
@@ -203,6 +245,11 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.eluder.coveralls</groupId>
+        <artifactId>coveralls-maven-plugin</artifactId>
+        <version>${coveralls.version}</version>
+      </plugin>
       <!-- DEPLOYMENT -->
       <plugin>
         <groupId>com.spotify</groupId>
@@ -215,6 +262,25 @@
             <EXEC_NAME>${project.build.finalName}.${project.packaging}</EXEC_NAME>
           </buildArgs>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>de.jutzig</groupId>
+        <artifactId>github-release-plugin</artifactId>
+        <version>${github-release-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>github-upload</id>
+            <phase>deploy</phase>
+            <goals>
+              <goal>release</goal>
+            </goals>
+            <configuration>
+              <releaseName>${project.version}</releaseName>
+              <tag>${project.version}</tag>
+              <artifact>${project.build.directory}/${project.artifactId}-${project.version}.jar</artifact>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
