@@ -254,7 +254,7 @@
       <plugin>
         <groupId>com.spotify</groupId>
         <artifactId>dockerfile-maven-plugin</artifactId>
-        <version>1.3.3</version>
+        <version>1.3.7</version>
         <configuration>
           <repository>jeggers/${project.artifactId}</repository>
           <tag>${project.version}</tag>
