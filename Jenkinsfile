@@ -48,16 +48,8 @@ pipeline
         
             steps
             {
-                sh 'mvn clean compile jar:jar spring-boot:repackage dockerfile:build dockerfile:push'
+                sh 'mvn clean compile jar:jar spring-boot:repackage dockerfile:build dockerfile:tag@tag-latest dockerfile:tag@tag-version dockerfile:push@push-latest dockerfile:push@push-version github-release:release'
             }
         }
-        
-        stage('Analysis')
-        {
-            steps
-            {
-                sh 'mvn clean verify jacoco:report coveralls:report -Dgpg.skip=true'
-            }
-        } 
     }
 }
