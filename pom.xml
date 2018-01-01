@@ -5,7 +5,7 @@
   <name>dockerhub-webhook-forwarder</name>
   <description>Provides a dockerhub webhook-endpoint and forwards events to a rabbitmq.</description>
   <url>https://github.com/julian-eggers/dockerhub-webhook-forwarder</url>
-  <version>0.6.0-RELEASE</version>
+  <version>0.6.3-RELEASE</version>
 
   <properties>
     <!-- System -->
@@ -20,6 +20,7 @@
     <!-- Build -->
     <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
     <coveralls.version>4.3.0</coveralls.version>
+    <dockerfile-maven-plugin.version>1.3.7</dockerfile-maven-plugin.version>
     <github-release-plugin.version>1.2.0</github-release-plugin.version>
   </properties>
 
@@ -254,7 +255,7 @@
       <plugin>
         <groupId>com.spotify</groupId>
         <artifactId>dockerfile-maven-plugin</artifactId>
-        <version>1.3.7</version>
+        <version>${dockerfile-maven-plugin.version}</version>
         <configuration>
           <repository>jeggers/${project.artifactId}</repository>
           <tag>${project.version}</tag>
@@ -262,25 +263,66 @@
             <EXEC_NAME>${project.build.finalName}.${project.packaging}</EXEC_NAME>
           </buildArgs>
         </configuration>
+        <executions>
+          <execution>
+            <id>tag-latest</id>
+            <phase>none</phase>
+            <goals>
+              <goal>tag</goal>
+            </goals>
+            <configuration>
+              <tag>latest</tag>
+            </configuration>
+          </execution>
+          <execution>
+            <id>tag-version</id>
+            <phase>none</phase>
+            <goals>
+              <goal>tag</goal>
+            </goals>
+            <configuration>
+              <tag>${project.version}</tag>
+            </configuration>
+          </execution>
+          <execution>
+            <id>push-latest</id>
+            <phase>none</phase>
+            <goals>
+              <goal>push</goal>
+            </goals>
+            <configuration>
+              <tag>latest</tag>
+            </configuration>
+          </execution>
+          <execution>
+            <id>push-version</id>
+            <phase>none</phase>
+            <goals>
+              <goal>push</goal>
+            </goals>
+            <configuration>
+              <tag>${project.version}</tag>
+            </configuration>
+          </execution>
+        </executions>
+        <!-- Required to support Java 9 -->
+        <dependencies>
+          <dependency>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-archiver</artifactId>
+            <version>3.4</version>
+          </dependency>
+          <dependency>
+            <groupId>javax.activation</groupId>
+            <artifactId>javax.activation-api</artifactId>
+            <version>1.2.0</version>
+          </dependency>
+        </dependencies>
       </plugin>
       <plugin>
         <groupId>de.jutzig</groupId>
         <artifactId>github-release-plugin</artifactId>
         <version>${github-release-plugin.version}</version>
-        <executions>
-          <execution>
-            <id>github-upload</id>
-            <phase>deploy</phase>
-            <goals>
-              <goal>release</goal>
-            </goals>
-            <configuration>
-              <releaseName>${project.version}</releaseName>
-              <tag>${project.version}</tag>
-              <artifact>${project.build.directory}/${project.artifactId}-${project.version}.jar</artifact>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>
