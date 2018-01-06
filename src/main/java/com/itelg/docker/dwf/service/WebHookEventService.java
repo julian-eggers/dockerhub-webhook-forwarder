@@ -4,5 +4,5 @@ import com.itelg.docker.dwf.domain.WebHookEvent;
 
 public interface WebHookEventService
 {
-    public void publishEvent(WebHookEvent event);
+    public void publishEvent(WebHookEvent webHookEvent);
 }

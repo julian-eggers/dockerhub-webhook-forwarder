@@ -32,7 +32,7 @@ jeggers/dockerhub-webhook-forwarder:latest \
 
 ## Message-Content
 
-### Compressed (Routing-Key: webhookEvent.compressed)
+### Compressed (Routing-Key: webHookEvent.compressed)
 ```json
 {
   "namespace" : "jeggers",
@@ -42,5 +42,5 @@ jeggers/dockerhub-webhook-forwarder:latest \
 }
 ```
 
-### Original (Routing-Key: webhookEvent.original)
+### Original (Routing-Key: webHookEvent.original)
 [Dockerhub: Webhook-Example](https://docs.docker.com/docker-hub/webhooks/)

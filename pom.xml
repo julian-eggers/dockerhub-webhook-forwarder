@@ -5,7 +5,7 @@
   <name>dockerhub-webhook-forwarder</name>
   <description>Provides a dockerhub webhook-endpoint and forwards events to a rabbitmq.</description>
   <url>https://github.com/julian-eggers/dockerhub-webhook-forwarder</url>
-  <version>0.6.3-RELEASE</version>
+  <version>0.6.4-RELEASE</version>
 
   <properties>
     <!-- System -->
@@ -45,6 +45,33 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-undertow</artifactId>
+    </dependency>
+
+    <!-- Messaging -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-amqp</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-aws-messaging</artifactId>
+      <version>1.2.2.RELEASE</version>
+    </dependency>
+
+    <!-- Other -->
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>2.5</version>
+    </dependency>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <!-- Testing -->
@@ -88,26 +115,6 @@
       <version>${jacoco.version}</version>
       <scope>test</scope>
     </dependency>
-
-    <!-- Other -->
-    <dependency>
-      <groupId>org.json</groupId>
-      <artifactId>json</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-      <version>2.5</version>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-amqp</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.projectlombok</groupId>
-      <artifactId>lombok</artifactId>
-      <scope>provided</scope>
-    </dependency>
   </dependencies>
 
   <scm>
@@ -131,7 +138,7 @@
   </licenses>
 
   <build>
-    <finalName>dockerhub-webhook-forwarder</finalName>
+    <finalName>${project.artifactId}</finalName>
     <plugins>
       <!-- BUILD AND FILES -->
       <plugin>
@@ -259,9 +266,6 @@
         <configuration>
           <repository>jeggers/${project.artifactId}</repository>
           <tag>${project.version}</tag>
-          <buildArgs>
-            <EXEC_NAME>${project.build.finalName}.${project.packaging}</EXEC_NAME>
-          </buildArgs>
         </configuration>
         <executions>
           <execution>
