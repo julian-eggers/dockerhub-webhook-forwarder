@@ -7,18 +7,18 @@ import org.springframework.stereotype.Service;
 
 import com.itelg.docker.dwf.domain.WebHookEvent;
 import com.itelg.docker.dwf.service.WebHookEventService;
-import com.itelg.docker.dwf.strategy.forwarder.WebhookEventForwarder;
+import com.itelg.docker.dwf.strategy.forwarder.WebHookEventForwarder;
 
 @Service
 public class DefaultWebHookEventService implements WebHookEventService
 {
     @Autowired
-    private List<WebhookEventForwarder> webhookEventForwarders;
+    private List<WebHookEventForwarder> webhookEventForwarders;
 
     @Override
     public void publishEvent(WebHookEvent webHookEvent)
     {
-        for (WebhookEventForwarder forwarder : webhookEventForwarders)
+        for (WebHookEventForwarder forwarder : webhookEventForwarders)
         {
             forwarder.publish(webHookEvent);
         }

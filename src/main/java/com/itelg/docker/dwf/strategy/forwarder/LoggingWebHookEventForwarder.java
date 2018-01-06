@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
-public class LoggingWebhookEventForwarder implements WebhookEventForwarder
+public class LoggingWebHookEventForwarder implements WebHookEventForwarder
 {
     @Override
     public void publish(WebHookEvent webHookEvent)

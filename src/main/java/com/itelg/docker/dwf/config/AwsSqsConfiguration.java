@@ -13,8 +13,8 @@ import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.sqs.AmazonSQSAsync;
 import com.amazonaws.services.sqs.AmazonSQSAsyncClientBuilder;
-import com.itelg.docker.dwf.strategy.forwarder.AwsSqsWebhookEventForwarder;
-import com.itelg.docker.dwf.strategy.forwarder.WebhookEventForwarder;
+import com.itelg.docker.dwf.strategy.forwarder.AwsSqsWebHookEventForwarder;
+import com.itelg.docker.dwf.strategy.forwarder.WebHookEventForwarder;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -50,8 +50,8 @@ public class AwsSqsConfiguration
     }
 
     @Bean
-    WebhookEventForwarder awsSqsWebhookEventForwarder()
+    WebHookEventForwarder awsSqsWebhookEventForwarder()
     {
-        return new AwsSqsWebhookEventForwarder(queueMessagingTemplate());
+        return new AwsSqsWebHookEventForwarder(queueMessagingTemplate());
     }
 }

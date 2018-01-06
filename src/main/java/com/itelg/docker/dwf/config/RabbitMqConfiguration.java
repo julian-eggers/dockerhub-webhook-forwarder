@@ -12,12 +12,15 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.itelg.docker.dwf.strategy.forwarder.RabbitMqWebHookEventForwarder;
+import com.itelg.docker.dwf.strategy.forwarder.WebHookEventForwarder;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Configuration
 @ConditionalOnExpression("'${webhookevent.forward.rabbitmq.hosts}' != ''")
 @Slf4j
-public class RabbitConfiguration
+public class RabbitMqConfiguration
 {
     @Value("${webhookevent.forward.rabbitmq.hosts}")
     private String rabbitmqAddresses;
@@ -35,13 +38,13 @@ public class RabbitConfiguration
     private String routingKeyPrefix;
 
     @PostConstruct
-    public void init()
+    void init()
     {
         log.info("RabbitMQ-Forwarder activated");
     }
 
     @Bean
-    public CachingConnectionFactory connectionFactory()
+    CachingConnectionFactory connectionFactory()
     {
         CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
         connectionFactory.setAddresses(rabbitmqAddresses);
@@ -51,13 +54,13 @@ public class RabbitConfiguration
     }
 
     @Bean
-    public RabbitAdmin rabbitAdmin()
+    RabbitAdmin rabbitAdmin()
     {
         return new RabbitAdmin(connectionFactory());
     }
 
     @Bean
-    public TopicExchange webHookEventExchange()
+    TopicExchange webHookEventExchange()
     {
         TopicExchange exchange = new TopicExchange(exchangeName);
         rabbitAdmin().declareExchange(exchange);
@@ -65,7 +68,16 @@ public class RabbitConfiguration
     }
 
     @Bean
-    public RabbitTemplate webHookEventTemplate()
+    RabbitTemplate webHookEventOriginalTemplate()
+    {
+        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory());
+        rabbitTemplate.setExchange(exchangeName);
+        rabbitTemplate.setRoutingKey(routingKeyPrefix + ".original");
+        return rabbitTemplate;
+    }
+
+    @Bean
+    RabbitTemplate webHookEventCompressedTemplate()
     {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory());
         rabbitTemplate.setExchange(exchangeName);
@@ -75,11 +87,8 @@ public class RabbitConfiguration
     }
 
     @Bean
-    public RabbitTemplate webHookEventOriginalTemplate()
+    WebHookEventForwarder rabbitMqWebHookEventForwarder()
     {
-        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory());
-        rabbitTemplate.setExchange(exchangeName);
-        rabbitTemplate.setRoutingKey(routingKeyPrefix + ".original");
-        return rabbitTemplate;
+        return new RabbitMqWebHookEventForwarder();
     }
 }

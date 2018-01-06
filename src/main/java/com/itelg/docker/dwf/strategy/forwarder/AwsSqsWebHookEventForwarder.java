@@ -12,7 +12,7 @@ import com.itelg.docker.dwf.domain.WebHookEvent;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class AwsSqsWebhookEventForwarder implements WebhookEventForwarder
+public class AwsSqsWebHookEventForwarder implements WebHookEventForwarder
 {
     private final QueueMessagingTemplate queueMessagingTemplate;
 

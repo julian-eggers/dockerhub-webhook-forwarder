@@ -6,13 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.itelg.docker.dwf.domain.WebHookEvent;
 
-public class RabbitMQWebhookEventForwarder implements WebhookEventForwarder
+public class RabbitMqWebHookEventForwarder implements WebHookEventForwarder
 {
     @Autowired
-    private RabbitTemplate webHookEventTemplate;
+    private RabbitTemplate webHookEventOriginalTemplate;
 
     @Autowired
-    private RabbitTemplate webHookEventOriginalTemplate;
+    private RabbitTemplate webHookEventCompressedTemplate;
 
     @Override
     public void publish(WebHookEvent webHookEvent)
@@ -23,6 +23,6 @@ public class RabbitMQWebhookEventForwarder implements WebhookEventForwarder
         }
 
         webHookEvent.setOriginalJson(null);
-        webHookEventTemplate.convertAndSend(webHookEvent);
+        webHookEventCompressedTemplate.convertAndSend(webHookEvent);
     }
 }

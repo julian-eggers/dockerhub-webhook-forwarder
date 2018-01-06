@@ -1,4 +1,4 @@
-package com.itelg.docker.dfw.domain;
+package com.itelg.docker.dwf.domain;
 
 import org.junit.Assert;
 import org.junit.Test;
