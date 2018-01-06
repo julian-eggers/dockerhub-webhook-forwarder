@@ -22,7 +22,6 @@ public class RabbitMqWebHookEventForwarder implements WebHookEventForwarder
             webHookEventOriginalTemplate.send(MessageBuilder.withBody(webHookEvent.getOriginalJson().getBytes()).setContentType("application/json").build());
         }
 
-        webHookEvent.setOriginalJson(null);
-        webHookEventCompressedTemplate.convertAndSend(webHookEvent);
+        webHookEventCompressedTemplate.convertAndSend(webHookEvent.removeOriginalJson());
     }
 }

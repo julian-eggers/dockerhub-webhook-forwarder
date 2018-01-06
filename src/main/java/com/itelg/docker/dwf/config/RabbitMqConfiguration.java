@@ -38,13 +38,13 @@ public class RabbitMqConfiguration
     private String routingKeyPrefix;
 
     @PostConstruct
-    void init()
+    public void init()
     {
         log.info("RabbitMQ-Forwarder activated");
     }
 
     @Bean
-    CachingConnectionFactory connectionFactory()
+    public CachingConnectionFactory connectionFactory()
     {
         CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
         connectionFactory.setAddresses(rabbitmqAddresses);
@@ -54,13 +54,13 @@ public class RabbitMqConfiguration
     }
 
     @Bean
-    RabbitAdmin rabbitAdmin()
+    public RabbitAdmin rabbitAdmin()
     {
         return new RabbitAdmin(connectionFactory());
     }
 
     @Bean
-    TopicExchange webHookEventExchange()
+    public TopicExchange webHookEventExchange()
     {
         TopicExchange exchange = new TopicExchange(exchangeName);
         rabbitAdmin().declareExchange(exchange);
@@ -68,7 +68,7 @@ public class RabbitMqConfiguration
     }
 
     @Bean
-    RabbitTemplate webHookEventOriginalTemplate()
+    public RabbitTemplate webHookEventOriginalTemplate()
     {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory());
         rabbitTemplate.setExchange(exchangeName);
@@ -77,7 +77,7 @@ public class RabbitMqConfiguration
     }
 
     @Bean
-    RabbitTemplate webHookEventCompressedTemplate()
+    public RabbitTemplate webHookEventCompressedTemplate()
     {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory());
         rabbitTemplate.setExchange(exchangeName);
@@ -87,7 +87,7 @@ public class RabbitMqConfiguration
     }
 
     @Bean
-    WebHookEventForwarder rabbitMqWebHookEventForwarder()
+    public WebHookEventForwarder rabbitMqWebHookEventForwarder()
     {
         return new RabbitMqWebHookEventForwarder();
     }

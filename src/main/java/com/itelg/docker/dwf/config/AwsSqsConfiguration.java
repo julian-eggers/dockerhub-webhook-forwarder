@@ -33,25 +33,26 @@ public class AwsSqsConfiguration
     private String region;
 
     @PostConstruct
-    void init()
+    public void init()
     {
         log.info("AwsSqs-Forwarder activated");
     }
 
-    AmazonSQSAsync awsSqsAsync()
+    public AmazonSQSAsync awsSqsAsync()
     {
         AWSCredentialsProvider credentials = new AWSStaticCredentialsProvider(new BasicAWSCredentials(accessKey, secretKey));
         return AmazonSQSAsyncClientBuilder.standard().withRegion(region).withCredentials(credentials).build();
     }
 
-    QueueMessagingTemplate queueMessagingTemplate()
+    @Bean
+    public QueueMessagingTemplate queueMessagingTemplate()
     {
         return new QueueMessagingTemplate(awsSqsAsync());
     }
 
     @Bean
-    WebHookEventForwarder awsSqsWebhookEventForwarder()
+    public WebHookEventForwarder awsSqsWebhookEventForwarder()
     {
-        return new AwsSqsWebHookEventForwarder(queueMessagingTemplate());
+        return new AwsSqsWebHookEventForwarder();
     }
 }
