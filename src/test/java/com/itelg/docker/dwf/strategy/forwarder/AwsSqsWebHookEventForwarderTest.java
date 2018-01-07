@@ -1,5 +1,11 @@
 package com.itelg.docker.dwf.strategy.forwarder;
 
+import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.eq;
+import static org.easymock.EasyMock.expectLastCall;
+import static org.easymock.EasyMock.getCurrentArguments;
+import static org.powermock.api.easymock.PowerMock.replayAll;
+import static org.powermock.api.easymock.PowerMock.verifyAll;
 import static org.powermock.reflect.Whitebox.setInternalState;
 
 import java.util.Arrays;
@@ -10,9 +16,12 @@ import org.junit.runner.RunWith;
 import org.powermock.api.easymock.annotation.MockStrict;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.cloud.aws.messaging.core.QueueMessagingTemplate;
+import org.springframework.messaging.Message;
+
+import com.itelg.docker.dwf.DomainTestSupport;
 
 @RunWith(PowerMockRunner.class)
-public class AwsSqsWebHookEventForwarderTest
+public class AwsSqsWebHookEventForwarderTest implements DomainTestSupport
 {
     @TestSubject
     private WebHookEventForwarder webHookEventForwarder = new AwsSqsWebHookEventForwarder();
@@ -21,39 +30,93 @@ public class AwsSqsWebHookEventForwarderTest
     private QueueMessagingTemplate queueMessagingTemplate;
 
     @Test
-    public void before()
+    public void testPublish()
     {
         setInternalState(webHookEventForwarder, "originalQueues", Arrays.asList("original1", "original2"));
         setInternalState(webHookEventForwarder, "compressedQueues", Arrays.asList("compressed1", "compressed2"));
+
+        queueMessagingTemplate.send(eq("original1"), anyObject(Message.class));
+        queueMessagingTemplate.send(eq("original2"), anyObject(Message.class));
+        queueMessagingTemplate.send(eq("compressed1"), anyObject(Message.class));
+        queueMessagingTemplate.send(eq("compressed2"), anyObject(Message.class));
+
+        replayAll();
+        webHookEventForwarder.publish(getCompleteWebHookEvent());
+        verifyAll();
     }
 
     @Test
-    public void testPublish()
+    public void testPublishWithoutOriginalJson()
     {
+        setInternalState(webHookEventForwarder, "originalQueues", Arrays.asList("original1", "original2"));
+        setInternalState(webHookEventForwarder, "compressedQueues", Arrays.asList("compressed1", "compressed2"));
 
+        queueMessagingTemplate.send(eq("compressed1"), anyObject(Message.class));
+        queueMessagingTemplate.send(eq("compressed2"), anyObject(Message.class));
+
+        replayAll();
+        webHookEventForwarder.publish(getBaseWebHookEvent());
+        verifyAll();
     }
 
     @Test
     public void testPublishWithoutOriginalQueues()
     {
+        setInternalState(webHookEventForwarder, "originalQueues", Arrays.asList());
+        setInternalState(webHookEventForwarder, "compressedQueues", Arrays.asList("compressed1", "compressed2"));
 
+        queueMessagingTemplate.send(eq("compressed1"), anyObject(Message.class));
+        queueMessagingTemplate.send(eq("compressed2"), anyObject(Message.class));
+
+        replayAll();
+        webHookEventForwarder.publish(getCompleteWebHookEvent());
+        verifyAll();
     }
 
     @Test
     public void testPublishWithInvalidOriginalQueues()
     {
+        setInternalState(webHookEventForwarder, "originalQueues", Arrays.asList("original1", ""));
+        setInternalState(webHookEventForwarder, "compressedQueues", Arrays.asList());
 
+        queueMessagingTemplate.send(eq("original1"), anyObject(Message.class));
+
+        replayAll();
+        webHookEventForwarder.publish(getCompleteWebHookEvent());
+        verifyAll();
     }
 
     @Test
     public void testPublishWithoutCompressedQueues()
     {
+        setInternalState(webHookEventForwarder, "originalQueues", Arrays.asList("original1", "original2"));
+        setInternalState(webHookEventForwarder, "compressedQueues", Arrays.asList());
 
+        queueMessagingTemplate.send(eq("original1"), anyObject(Message.class));
+        queueMessagingTemplate.send(eq("original2"), anyObject(Message.class));
+
+        replayAll();
+        webHookEventForwarder.publish(getCompleteWebHookEvent());
+        verifyAll();
     }
 
     @Test
     public void testPublishWithInvalidCompressedQueues()
     {
+        setInternalState(webHookEventForwarder, "originalQueues", Arrays.asList());
+        setInternalState(webHookEventForwarder, "compressedQueues", Arrays.asList("compressed1", ""));
 
+        queueMessagingTemplate.send(eq("compressed1"), anyObject(Message.class));
+        expectLastCall().andAnswer(() ->
+        {
+            @SuppressWarnings("unchecked")
+            Message<String> message = (Message<String>) getCurrentArguments()[1];
+            System.out.println(message.getPayload());
+            return null;
+        });
+
+        replayAll();
+        webHookEventForwarder.publish(getCompleteWebHookEvent());
+        verifyAll();
     }
 }

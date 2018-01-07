@@ -3,6 +3,7 @@ package com.itelg.docker.dwf.strategy.forwarder;
 import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.getCurrentArguments;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.powermock.api.easymock.PowerMock.expectLastCall;
 import static org.powermock.api.easymock.PowerMock.replayAll;
@@ -12,20 +13,20 @@ import static org.powermock.reflect.Whitebox.setInternalState;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.api.easymock.annotation.Mock;
 import org.powermock.api.easymock.annotation.MockStrict;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
+import com.itelg.docker.dwf.DomainTestSupport;
 import com.itelg.docker.dwf.domain.WebHookEvent;
 
 @RunWith(PowerMockRunner.class)
-public class RabbitMqWebHookEventForwarderTest
+public class RabbitMqWebHookEventForwarderTest implements DomainTestSupport
 {
-    private WebHookEventForwarder webHookEventForwarder = new RabbitMqWebHookEventForwarder();;
+    private WebHookEventForwarder webHookEventForwarder = new RabbitMqWebHookEventForwarder();
 
-    @Mock
+    @MockStrict
     private RabbitTemplate webHookEventOriginalTemplate;
 
     @MockStrict
@@ -50,8 +51,7 @@ public class RabbitMqWebHookEventForwarderTest
         });
 
         replayAll();
-        WebHookEvent webhookEvent = new WebHookEvent();
-        webHookEventForwarder.publish(webhookEvent);
+        webHookEventForwarder.publish(getBaseWebHookEvent());
         verifyAll();
     }
 
@@ -62,7 +62,7 @@ public class RabbitMqWebHookEventForwarderTest
         expectLastCall().andAnswer(() ->
         {
             Message message = (Message) getCurrentArguments()[0];
-            assertEquals("Testtest", new String(message.getBody()));
+            assertNotNull(message.getBody());
             assertEquals("application/json", message.getMessageProperties().getContentType());
             return null;
         });
@@ -76,9 +76,7 @@ public class RabbitMqWebHookEventForwarderTest
         });
 
         replayAll();
-        WebHookEvent webhookEvent = new WebHookEvent();
-        webhookEvent.setOriginalJson("Testtest");
-        webHookEventForwarder.publish(webhookEvent);
+        webHookEventForwarder.publish(getCompleteWebHookEvent());
         verifyAll();
     }
 }

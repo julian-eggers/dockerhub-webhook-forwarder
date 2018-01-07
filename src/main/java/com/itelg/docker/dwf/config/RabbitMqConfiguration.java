@@ -77,12 +77,12 @@ public class RabbitMqConfiguration
     }
 
     @Bean
-    public RabbitTemplate webHookEventCompressedTemplate()
+    public RabbitTemplate webHookEventCompressedTemplate(Jackson2JsonMessageConverter jackson2JsonMessageConverter)
     {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory());
         rabbitTemplate.setExchange(exchangeName);
         rabbitTemplate.setRoutingKey(routingKeyPrefix + ".compressed");
-        rabbitTemplate.setMessageConverter(new Jackson2JsonMessageConverter());
+        rabbitTemplate.setMessageConverter(jackson2JsonMessageConverter);
         return rabbitTemplate;
     }
 

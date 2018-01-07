@@ -12,16 +12,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.easymock.annotation.Mock;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import com.itelg.docker.dwf.DomainTestSupport;
 import com.itelg.docker.dwf.domain.WebHookEvent;
 import com.itelg.docker.dwf.service.WebHookEventService;
 import com.itelg.docker.dwf.strategy.forwarder.WebHookEventForwarder;
 
 @RunWith(PowerMockRunner.class)
-@PowerMockIgnore("javax.management.*")
-public class DefaultWebHookEventServiceTest
+public class DefaultWebHookEventServiceTest implements DomainTestSupport
 {
     @TestSubject
     private WebHookEventService webHookEventService = new DefaultWebHookEventService();
@@ -45,8 +44,7 @@ public class DefaultWebHookEventServiceTest
         webHookEventForwarder2.publish(anyObject(WebHookEvent.class));
 
         replayAll();
-        WebHookEvent webhookEvent = new WebHookEvent();
-        webHookEventService.publishEvent(webhookEvent);
+        webHookEventService.publishEvent(getCompleteWebHookEvent());
         verifyAll();
     }
 }

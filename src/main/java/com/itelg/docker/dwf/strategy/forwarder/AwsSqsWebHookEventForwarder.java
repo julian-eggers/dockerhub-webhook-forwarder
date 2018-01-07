@@ -2,6 +2,7 @@ package com.itelg.docker.dwf.strategy.forwarder;
 
 import java.util.List;
 
+import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.aws.messaging.core.QueueMessagingTemplate;
@@ -21,12 +22,15 @@ public class AwsSqsWebHookEventForwarder implements WebHookEventForwarder
     @Autowired
     private QueueMessagingTemplate queueMessagingTemplate;
 
+    @Autowired
+    private Jackson2JsonMessageConverter jackson2JsonMessageConverter;
+
     @Override
     public void publish(WebHookEvent webHookEvent)
     {
         for (String queue : originalQueues)
         {
-            if (StringUtils.hasText(queue))
+            if (StringUtils.hasText(queue) && StringUtils.hasText(webHookEvent.getOriginalJson()))
             {
                 queueMessagingTemplate.send(queue, MessageBuilder.withPayload(webHookEvent.getOriginalJson()).build());
             }
@@ -36,6 +40,7 @@ public class AwsSqsWebHookEventForwarder implements WebHookEventForwarder
         {
             if (StringUtils.hasText(queue))
             {
+                System.out.println(new String(jackson2JsonMessageConverter.toMessage(webHookEvent.removeOriginalJson(), null).getBody()));
                 queueMessagingTemplate.send(queue, MessageBuilder.withPayload(webHookEvent.removeOriginalJson()).build());
             }
         }
