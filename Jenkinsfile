@@ -44,7 +44,7 @@ pipeline
         
         stage('Release')
         {
-            when { branch "0.6.4-RELEASE" }
+            when { branch "master" }
         
             steps
             {
