@@ -12,9 +12,15 @@ import lombok.SneakyThrows;
 public interface DomainTestSupport
 {
     @SneakyThrows
-    default String getWebHookEventJson()
+    default String getOriginalWebHookEventJson()
     {
-        return IOUtils.toString(new ClassPathResource("webhookevent.json").getInputStream(), Charset.defaultCharset());
+        return IOUtils.toString(new ClassPathResource("webhookevent-original.json").getInputStream(), Charset.defaultCharset());
+    }
+
+    @SneakyThrows
+    default String getCompressedWebHookEventJson()
+    {
+        return IOUtils.toString(new ClassPathResource("webhookevent-compressed.json").getInputStream(), Charset.defaultCharset());
     }
 
     default WebHookEvent getBaseWebHookEvent()
@@ -31,7 +37,7 @@ public interface DomainTestSupport
     default WebHookEvent getCompleteWebHookEvent()
     {
         WebHookEvent webHookEvent = getBaseWebHookEvent();
-        webHookEvent.setOriginalJson(getWebHookEventJson());
+        webHookEvent.setOriginalJson(getOriginalWebHookEventJson());
         return webHookEvent;
     }
 }

@@ -17,7 +17,7 @@ public class WebHookEventTest implements DomainTestSupport
         assertEquals("dockerhub-webhook-forwarder", webHookEvent.getRepositoryName());
         assertEquals("latest", webHookEvent.getTag());
         assertEquals("jeggers/dockerhub-webhook-forwarder:latest", webHookEvent.getImage());
-        assertEquals(getWebHookEventJson(), webHookEvent.getOriginalJson());
+        assertEquals(getOriginalWebHookEventJson(), webHookEvent.getOriginalJson());
     }
 
     @Test

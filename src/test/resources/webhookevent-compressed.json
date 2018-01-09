@@ -1,0 +1,6 @@
+{
+  "namespace" : "jeggers",
+  "repositoryName" : "cawandu",
+  "tag" : "latest",
+  "image" : "jeggers/cawandu:latest"
+}

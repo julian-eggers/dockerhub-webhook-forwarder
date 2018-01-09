@@ -12,11 +12,11 @@ public class WebhookEventParserTest implements DomainTestSupport
     @Test
     public void testParse()
     {
-        WebHookEvent event = new WebhookEventParser().parse(getWebHookEventJson());
+        WebHookEvent event = new WebhookEventParser().parse(getOriginalWebHookEventJson());
         assertEquals("jeggers", event.getNamespace());
         assertEquals("dockerhub-webhook-forwarder", event.getRepositoryName());
         assertEquals("latest", event.getTag());
         assertEquals("jeggers/dockerhub-webhook-forwarder:latest", event.getImage());
-        assertEquals(getWebHookEventJson(), event.getOriginalJson());
+        assertEquals(getOriginalWebHookEventJson(), event.getOriginalJson());
     }
 }

@@ -2,14 +2,16 @@ package com.itelg.docker.dwf.strategy.forwarder;
 
 import java.util.List;
 
-import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.aws.messaging.core.QueueMessagingTemplate;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.util.StringUtils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itelg.docker.dwf.domain.WebHookEvent;
+
+import lombok.SneakyThrows;
 
 public class AwsSqsWebHookEventForwarder implements WebHookEventForwarder
 {
@@ -23,7 +25,7 @@ public class AwsSqsWebHookEventForwarder implements WebHookEventForwarder
     private QueueMessagingTemplate queueMessagingTemplate;
 
     @Autowired
-    private Jackson2JsonMessageConverter jackson2JsonMessageConverter;
+    private ObjectMapper objectMapper;
 
     @Override
     public void publish(WebHookEvent webHookEvent)
@@ -40,9 +42,15 @@ public class AwsSqsWebHookEventForwarder implements WebHookEventForwarder
         {
             if (StringUtils.hasText(queue))
             {
-                System.out.println(new String(jackson2JsonMessageConverter.toMessage(webHookEvent.removeOriginalJson(), null).getBody()));
-                queueMessagingTemplate.send(queue, MessageBuilder.withPayload(webHookEvent.removeOriginalJson()).build());
+                String json = toJson(webHookEvent.removeOriginalJson());
+                queueMessagingTemplate.send(queue, MessageBuilder.withPayload(json).build());
             }
         }
+    }
+
+    @SneakyThrows
+    private String toJson(WebHookEvent webHookEvent)
+    {
+        return objectMapper.writeValueAsString(webHookEvent);
     }
 }

@@ -47,14 +47,14 @@ public class WebhookEventRestControllerTest implements DomainTestSupport
         webhookEventService.publishEvent(EasyMock.anyObject(WebHookEvent.class));
 
         replayAll();
-        WebHookEvent event = webhookEventRestController.receive(null, getWebHookEventJson());
+        WebHookEvent event = webhookEventRestController.receive(null, getOriginalWebHookEventJson());
         verifyAll();
 
         assertEquals("jeggers", event.getNamespace());
         assertEquals("dockerhub-webhook-forwarder", event.getRepositoryName());
         assertEquals("latest", event.getTag());
         assertEquals("jeggers/dockerhub-webhook-forwarder:latest", event.getImage());
-        assertEquals(getWebHookEventJson(), event.getOriginalJson());
+        assertEquals(getOriginalWebHookEventJson(), event.getOriginalJson());
     }
 
     @Test
