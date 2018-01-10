@@ -5,20 +5,15 @@ dockerhub-webhook-forwarder
 [![Coverage Status](https://coveralls.io/repos/julian-eggers/dockerhub-webhook-forwarder/badge.svg?branch=master&service=github)](https://coveralls.io/github/julian-eggers/dockerhub-webhook-forwarder?branch=master)
 [![Build Status](https://travis-ci.org/julian-eggers/dockerhub-webhook-forwarder.svg?branch=master)](https://travis-ci.org/julian-eggers/dockerhub-webhook-forwarder)
 
+Provides a dockerhub webhook-endpoint and forwards events to a message broker like RabbitMQ or AWS SQS.
 
 ## Docker
 [Dockerhub](https://hub.docker.com/r/jeggers/dockerhub-webhook-forwarder/)
-```
-docker run \
--d \
---name=dockerhub-webhook-forwarder \
---restart=always \
--p 8080:8080 \
-jeggers/dockerhub-webhook-forwarder:latest \
---webhookevent.forward.rabbitmq.hosts=localhost \
---webhookevent.forward.rabbitmq.username=guest \
---webhookevent.forward.rabbitmq.password=guest
-```
+
+## Setup
+1. Start dockerhub-webhook-forwarder (Docker recommended, [Examples](https://github.com/julian-eggers/dockerhub-webhook-forwarder/wiki#docker-examples))
+2. 
+
 
 | Property | Required | Default |
 | -------- | -------- | ------- |
@@ -36,7 +31,6 @@ You can choose between the [original event](https://docs.docker.com/docker-hub/w
 }
 ```
 
-
 ### RabbitMQ
 
 | Property | Required | Default |
@@ -50,10 +44,12 @@ You can choose between the [original event](https://docs.docker.com/docker-hub/w
 
 ### AWS SQS
 
-| Property | Required | Default |
-| -------- | -------- | ------- |
-| --webhookevent.forward.awssqs.access-key | yes |  |
-| --webhookevent.forward.awssqs.secret-key | yes |  |
-| --webhookevent.forward.awssqs.region | yes |  |
-| --webhookevent.forward.awssqs.queues.original | yes |  |
-| --webhookevent.forward.awssqs.queues.compressed | yes |  |
+| Property | Required | Default | Info |
+| -------- | -------- | ------- | ---- |
+| --webhookevent.forward.awssqs.access-key | yes |  | [Policy](https://github.com/julian-eggers/dockerhub-webhook-forwarder/wiki/AWS-SQS#policy) |
+| --webhookevent.forward.awssqs.secret-key | yes |  |  |
+| --webhookevent.forward.awssqs.region | yes |  | [Regions](https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/regions/Regions.html) |
+| --webhookevent.forward.awssqs.queues.original | no |  |  |
+| --webhookevent.forward.awssqs.queues.compressed | no |  |  |
+
+You have to specify at least one queue.
