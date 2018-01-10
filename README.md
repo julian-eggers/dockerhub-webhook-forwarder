@@ -12,12 +12,13 @@ Provides a dockerhub webhook-endpoint and forwards events to a message broker li
 
 ## Setup
 1. Start dockerhub-webhook-forwarder (Docker recommended, [Examples](https://github.com/julian-eggers/dockerhub-webhook-forwarder/wiki#docker-examples))
-2. 
+2. Add webhook-url to your dockerhub repositories (http://docker-webhook-forwarder/)
+3. Push any tag
 
 
-| Property | Required | Default |
-| -------- | -------- | ------- |
-| --request.token | no |  |
+| Property | Required | Default | Info |
+| -------- | -------- | ------- | ---- |
+| --request.token | no |  | http://docker-webhook-forwarder/?token=XYZ |
 
 
 ## Event forwarding
