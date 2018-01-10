@@ -1,25 +1,22 @@
 package com.itelg.docker.dwf.parser;
 
-import java.nio.charset.Charset;
+import static org.junit.Assert.assertEquals;
 
-import org.apache.commons.io.IOUtils;
-import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.core.io.ClassPathResource;
 
+import com.itelg.docker.dwf.DomainTestSupport;
 import com.itelg.docker.dwf.domain.WebHookEvent;
 
-public class WebhookEventParserTest
+public class WebhookEventParserTest implements DomainTestSupport
 {
     @Test
-    public void testParse() throws Exception
+    public void testParse()
     {
-        String json = IOUtils.toString(new ClassPathResource("webhookevent.json").getInputStream(), Charset.forName("UTF-8"));
-        WebHookEvent event = new WebhookEventParser().parse(json);
-        Assert.assertEquals("jeggers", event.getNamespace());
-        Assert.assertEquals("dockerhub-webhook-forwarder", event.getRepositoryName());
-        Assert.assertEquals("latest", event.getTag());
-        Assert.assertEquals("jeggers/dockerhub-webhook-forwarder:latest", event.getImage());
-        Assert.assertNotNull(event.getOriginalJson());
+        WebHookEvent event = new WebhookEventParser().parse(getOriginalWebHookEventJson());
+        assertEquals("jeggers", event.getNamespace());
+        assertEquals("dockerhub-webhook-forwarder", event.getRepositoryName());
+        assertEquals("latest", event.getTag());
+        assertEquals("jeggers/dockerhub-webhook-forwarder:latest", event.getImage());
+        assertEquals(getOriginalWebHookEventJson(), event.getOriginalJson());
     }
 }

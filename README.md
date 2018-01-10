@@ -5,34 +5,24 @@ dockerhub-webhook-forwarder
 [![Coverage Status](https://coveralls.io/repos/julian-eggers/dockerhub-webhook-forwarder/badge.svg?branch=master&service=github)](https://coveralls.io/github/julian-eggers/dockerhub-webhook-forwarder?branch=master)
 [![Build Status](https://travis-ci.org/julian-eggers/dockerhub-webhook-forwarder.svg?branch=master)](https://travis-ci.org/julian-eggers/dockerhub-webhook-forwarder)
 
+Provides a dockerhub webhook-endpoint and forwards events to a message broker like RabbitMQ or AWS SQS.
 
 ## Docker
 [Dockerhub](https://hub.docker.com/r/jeggers/dockerhub-webhook-forwarder/)
-```
-docker run \
--d \
---name=dockerhub-webhook-forwarder \
---restart=always \
--p 8080:8080 \
-jeggers/dockerhub-webhook-forwarder:latest \
---webhookevent.forward.rabbitmq.hosts=localhost \
---webhookevent.forward.rabbitmq.username=guest \
---webhookevent.forward.rabbitmq.password=guest
-```
 
-| Property | Required | Default |
-| -------- | -------- | ------- |
-| --request.token | no |  |
-| --webhookevent.forward.rabbitmq.hosts | no |  |
-| --webhookevent.forward.rabbitmq.username | no | guest |
-| --webhookevent.forward.rabbitmq.password | no | guest |
-| --webhookevent.forward.rabbitmq.exchange.name | no | io.docker |
-| --webhookevent.forward.rabbitmq.routing-key.prefix | no | webHookEvent (results in "webHookEvent.compressed" and "webHookEvent.original") |
+## Setup
+1. Start dockerhub-webhook-forwarder (Docker recommended, [Examples](https://github.com/julian-eggers/dockerhub-webhook-forwarder/wiki#docker-examples))
+2. Add webhook-url to your dockerhub repositories (http://docker-webhook-forwarder/)
+3. Push any tag
 
 
-## Message-Content
+| Property | Required | Default | Info |
+| -------- | -------- | ------- | ---- |
+| --request.token | no |  | http://docker-webhook-forwarder/?token=XYZ |
 
-### Compressed (Routing-Key: webhookEvent.compressed)
+
+## Event forwarding
+You can choose between the [original event](https://docs.docker.com/docker-hub/webhooks/) or the following compressed version.
 ```json
 {
   "namespace" : "jeggers",
@@ -42,5 +32,25 @@ jeggers/dockerhub-webhook-forwarder:latest \
 }
 ```
 
-### Original (Routing-Key: webhookEvent.original)
-[Dockerhub: Webhook-Example](https://docs.docker.com/docker-hub/webhooks/)
+### RabbitMQ
+
+| Property | Required | Default |
+| -------- | -------- | ------- |
+| --webhookevent.forward.rabbitmq.hosts | yes |  |
+| --webhookevent.forward.rabbitmq.username | no | guest |
+| --webhookevent.forward.rabbitmq.password | no | guest |
+| --webhookevent.forward.rabbitmq.exchange.name | no | io.docker |
+| --webhookevent.forward.rabbitmq.routing-key.prefix | no | webHookEvent (results in "webHookEvent.compressed" and "webHookEvent.original") |
+
+
+### AWS SQS
+
+| Property | Required | Default | Info |
+| -------- | -------- | ------- | ---- |
+| --webhookevent.forward.awssqs.access-key | yes |  | [Policy](https://github.com/julian-eggers/dockerhub-webhook-forwarder/wiki/AWS-SQS#policy) |
+| --webhookevent.forward.awssqs.secret-key | yes |  |  |
+| --webhookevent.forward.awssqs.region | yes |  | [Regions](https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/regions/Regions.html) |
+| --webhookevent.forward.awssqs.queues.original | no |  |  |
+| --webhookevent.forward.awssqs.queues.compressed | no |  |  |
+
+You have to specify at least one queue.

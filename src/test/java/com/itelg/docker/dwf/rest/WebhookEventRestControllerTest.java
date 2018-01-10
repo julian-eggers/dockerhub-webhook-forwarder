@@ -1,30 +1,30 @@
 package com.itelg.docker.dwf.rest;
 
-import java.nio.charset.Charset;
+import static org.junit.Assert.assertEquals;
+import static org.powermock.api.easymock.PowerMock.expectLastCall;
+import static org.powermock.api.easymock.PowerMock.replayAll;
+import static org.powermock.api.easymock.PowerMock.verifyAll;
+import static org.powermock.reflect.Whitebox.setInternalState;
 
-import org.apache.commons.io.IOUtils;
 import org.easymock.EasyMock;
-import org.junit.Assert;
+import org.easymock.TestSubject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.api.easymock.PowerMock;
 import org.powermock.api.easymock.annotation.MockStrict;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.reflect.Whitebox;
-import org.springframework.core.io.ClassPathResource;
 
+import com.itelg.docker.dwf.DomainTestSupport;
 import com.itelg.docker.dwf.domain.WebHookEvent;
 import com.itelg.docker.dwf.parser.WebhookEventParser;
 import com.itelg.docker.dwf.rest.domain.AccessDeniedException;
 import com.itelg.docker.dwf.service.WebHookEventService;
 
 @RunWith(PowerMockRunner.class)
-@PowerMockIgnore("javax.management.*")
-public class WebhookEventRestControllerTest
+public class WebhookEventRestControllerTest implements DomainTestSupport
 {
-    private WebhookEventRestController webhookEventRestController;
+    @TestSubject
+    private WebhookEventRestController webhookEventRestController = new WebhookEventRestController();
 
     @MockStrict
     private WebhookEventParser webhookEventParser;
@@ -35,74 +35,64 @@ public class WebhookEventRestControllerTest
     @Before
     public void before()
     {
-        webhookEventRestController = new WebhookEventRestController();
-        Whitebox.setInternalState(webhookEventRestController, webhookEventService);
-        Whitebox.setInternalState(webhookEventRestController, webhookEventParser);
-        Whitebox.setInternalState(webhookEventRestController, "token", "");
+        setInternalState(webhookEventRestController, "token", "");
     }
 
     @Test
     public void testReceive() throws Exception
     {
         webhookEventParser.parse(EasyMock.anyString());
-        PowerMock.expectLastCall().andAnswer(() ->
-        {
-            WebHookEvent event = new WebHookEvent();
-            event.setNamespace("jeggers");
-            event.setRepositoryName("dockerhub-webhook-forwarder");
-            event.setTag("latest");
-            event.setImage("jeggers/dockerhub-webhook-forwarder:latest");
-            return event;
-        });
+        expectLastCall().andReturn(getCompleteWebHookEvent());
 
         webhookEventService.publishEvent(EasyMock.anyObject(WebHookEvent.class));
-        PowerMock.expectLastCall();
 
-        PowerMock.replayAll();
-        String json = IOUtils.toString(new ClassPathResource("webhookevent.json").getInputStream(), Charset.forName("UTF-8"));
-        WebHookEvent event = webhookEventRestController.receive(null, json);
-        PowerMock.verifyAll();
+        replayAll();
+        WebHookEvent event = webhookEventRestController.receive(null, getOriginalWebHookEventJson());
+        verifyAll();
 
-        Assert.assertEquals("jeggers", event.getNamespace());
-        Assert.assertEquals("dockerhub-webhook-forwarder", event.getRepositoryName());
-        Assert.assertEquals("latest", event.getTag());
-        Assert.assertEquals("jeggers/dockerhub-webhook-forwarder:latest", event.getImage());
+        assertEquals("jeggers", event.getNamespace());
+        assertEquals("dockerhub-webhook-forwarder", event.getRepositoryName());
+        assertEquals("latest", event.getTag());
+        assertEquals("jeggers/dockerhub-webhook-forwarder:latest", event.getImage());
+        assertEquals(getOriginalWebHookEventJson(), event.getOriginalJson());
     }
 
     @Test
     public void testForce() throws Exception
     {
         webhookEventService.publishEvent(EasyMock.anyObject(WebHookEvent.class));
-        PowerMock.expectLastCall();
 
-        PowerMock.replayAll();
+        replayAll();
         WebHookEvent event = webhookEventRestController.force(null, "jeggers", "dockerhub-webhook-forwarder", "latest");
-        PowerMock.verifyAll();
+        verifyAll();
 
-        Assert.assertEquals("jeggers", event.getNamespace());
-        Assert.assertEquals("dockerhub-webhook-forwarder", event.getRepositoryName());
-        Assert.assertEquals("latest", event.getTag());
-        Assert.assertEquals("jeggers/dockerhub-webhook-forwarder:latest", event.getImage());
+        assertEquals("jeggers", event.getNamespace());
+        assertEquals("dockerhub-webhook-forwarder", event.getRepositoryName());
+        assertEquals("latest", event.getTag());
+        assertEquals("jeggers/dockerhub-webhook-forwarder:latest", event.getImage());
     }
 
     @Test
-    public void testValidateTokenValid()
+    public void testValidateWithoutConfiguredToken()
     {
-        Whitebox.setInternalState(webhookEventRestController, "token", "123");
+        setInternalState(webhookEventRestController, "token", "");
+
         webhookEventRestController.valideToken("123");
     }
 
     @Test
-    public void testValidateTokenNotConfigured()
+    public void testValidateWithValidToken()
     {
-        Whitebox.setInternalState(webhookEventRestController, "token", "");
+        setInternalState(webhookEventRestController, "token", "123");
+
         webhookEventRestController.valideToken("123");
     }
 
     @Test(expected = AccessDeniedException.class)
     public void testValidateTokenNotValid()
     {
-        Whitebox.setInternalState(webhookEventRestController, "token", "321");
+        setInternalState(webhookEventRestController, "token", "321");
+
         webhookEventRestController.valideToken("123");
     }
 }
