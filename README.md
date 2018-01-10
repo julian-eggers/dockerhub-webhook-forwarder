@@ -23,16 +23,10 @@ jeggers/dockerhub-webhook-forwarder:latest \
 | Property | Required | Default |
 | -------- | -------- | ------- |
 | --request.token | no |  |
-| --webhookevent.forward.rabbitmq.hosts | no |  |
-| --webhookevent.forward.rabbitmq.username | no | guest |
-| --webhookevent.forward.rabbitmq.password | no | guest |
-| --webhookevent.forward.rabbitmq.exchange.name | no | io.docker |
-| --webhookevent.forward.rabbitmq.routing-key.prefix | no | webHookEvent (results in "webHookEvent.compressed" and "webHookEvent.original") |
 
 
-## Message-Content
-
-### Compressed (Routing-Key: webHookEvent.compressed)
+## Event forwarding
+You can choose between the [original event](https://docs.docker.com/docker-hub/webhooks/) or the following compressed version.
 ```json
 {
   "namespace" : "jeggers",
@@ -42,5 +36,24 @@ jeggers/dockerhub-webhook-forwarder:latest \
 }
 ```
 
-### Original (Routing-Key: webHookEvent.original)
-[Dockerhub: Webhook-Example](https://docs.docker.com/docker-hub/webhooks/)
+
+### RabbitMQ
+
+| Property | Required | Default |
+| -------- | -------- | ------- |
+| --webhookevent.forward.rabbitmq.hosts | yes |  |
+| --webhookevent.forward.rabbitmq.username | no | guest |
+| --webhookevent.forward.rabbitmq.password | no | guest |
+| --webhookevent.forward.rabbitmq.exchange.name | no | io.docker |
+| --webhookevent.forward.rabbitmq.routing-key.prefix | no | webHookEvent (results in "webHookEvent.compressed" and "webHookEvent.original") |
+
+
+### AWS SQS
+
+| Property | Required | Default |
+| -------- | -------- | ------- |
+| --webhookevent.forward.awssqs.access-key | yes |  |
+| --webhookevent.forward.awssqs.secret-key | yes |  |
+| --webhookevent.forward.awssqs.region | yes |  |
+| --webhookevent.forward.awssqs.queues.original | yes |  |
+| --webhookevent.forward.awssqs.queues.compressed | yes |  |
