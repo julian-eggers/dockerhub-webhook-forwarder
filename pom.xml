@@ -5,7 +5,7 @@
   <name>dockerhub-webhook-forwarder</name>
   <description>Provides a dockerhub webhook-endpoint and forwards events to a rabbitmq.</description>
   <url>https://github.com/julian-eggers/dockerhub-webhook-forwarder</url>
-  <version>0.6.4-RELEASE</version>
+  <version>0.6.5-RELEASE</version>
 
   <properties>
     <!-- System -->
@@ -45,6 +45,21 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-undertow</artifactId>
+    </dependency>
+
+    <!-- Logging & Monitoring -->
+    <dependency>
+      <groupId>org.jolokia</groupId>
+      <artifactId>jolokia-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.avides.spring</groupId>
+      <artifactId>springboot-prometheus-client</artifactId>
+      <version>0.6.0-RC1</version>
     </dependency>
 
     <!-- Messaging -->

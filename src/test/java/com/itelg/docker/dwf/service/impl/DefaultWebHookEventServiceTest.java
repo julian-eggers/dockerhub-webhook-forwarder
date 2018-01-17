@@ -12,7 +12,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.easymock.annotation.Mock;
+import org.powermock.api.easymock.annotation.MockStrict;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.springframework.boot.actuate.metrics.CounterService;
 
 import com.itelg.docker.dwf.DomainTestSupport;
 import com.itelg.docker.dwf.domain.WebHookEvent;
@@ -31,6 +33,9 @@ public class DefaultWebHookEventServiceTest implements DomainTestSupport
     @Mock
     private WebHookEventForwarder webHookEventForwarder2;
 
+    @MockStrict
+    private CounterService counterService;
+
     @Before
     public void before()
     {
@@ -40,8 +45,13 @@ public class DefaultWebHookEventServiceTest implements DomainTestSupport
     @Test
     public void testPublishEvent()
     {
+        counterService.increment("event_inbound_total");
+
         webHookEventForwarder1.publish(anyObject(WebHookEvent.class));
+        counterService.increment("event_forwarded_total");
+
         webHookEventForwarder2.publish(anyObject(WebHookEvent.class));
+        counterService.increment("event_forwarded_total");
 
         replayAll();
         webHookEventService.publishEvent(getCompleteWebHookEvent());

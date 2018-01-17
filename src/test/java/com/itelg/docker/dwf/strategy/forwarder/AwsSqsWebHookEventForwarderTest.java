@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.easymock.annotation.MockStrict;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.springframework.boot.actuate.metrics.CounterService;
 import org.springframework.cloud.aws.messaging.core.QueueMessagingTemplate;
 import org.springframework.messaging.Message;
 
@@ -35,6 +36,9 @@ public class AwsSqsWebHookEventForwarderTest implements DomainTestSupport
     @MockStrict
     private ObjectMapper objectMapper;
 
+    @MockStrict
+    private CounterService counterService;
+
     @Test
     public void testPublish() throws Exception
     {
@@ -42,8 +46,10 @@ public class AwsSqsWebHookEventForwarderTest implements DomainTestSupport
         setInternalState(webHookEventForwarder, "compressedQueues", Arrays.asList("compressed1", "compressed2"));
 
         queueMessagingTemplate.send(eq("original1"), anyObject(Message.class));
+        counterService.increment("event_forwarded_to{target=awssqs-original}");
 
         queueMessagingTemplate.send(eq("original2"), anyObject(Message.class));
+        counterService.increment("event_forwarded_to{target=awssqs-original}");
 
         objectMapper.writeValueAsString(anyObject(WebHookEvent.class));
         expectLastCall().andReturn(getCompressedWebHookEventJson());
@@ -57,6 +63,8 @@ public class AwsSqsWebHookEventForwarderTest implements DomainTestSupport
             return null;
         });
 
+        counterService.increment("event_forwarded_to{target=awssqs-compressed}");
+
         objectMapper.writeValueAsString(anyObject(WebHookEvent.class));
         expectLastCall().andReturn(getCompressedWebHookEventJson());
 
@@ -68,6 +76,8 @@ public class AwsSqsWebHookEventForwarderTest implements DomainTestSupport
             assertEquals(getCompressedWebHookEventJson(), message.getPayload());
             return null;
         });
+
+        counterService.increment("event_forwarded_to{target=awssqs-compressed}");
 
         replayAll();
         webHookEventForwarder.publish(getCompleteWebHookEvent());
@@ -92,6 +102,8 @@ public class AwsSqsWebHookEventForwarderTest implements DomainTestSupport
             return null;
         });
 
+        counterService.increment("event_forwarded_to{target=awssqs-compressed}");
+
         objectMapper.writeValueAsString(anyObject(WebHookEvent.class));
         expectLastCall().andReturn(getCompressedWebHookEventJson());
 
@@ -103,6 +115,8 @@ public class AwsSqsWebHookEventForwarderTest implements DomainTestSupport
             assertEquals(getCompressedWebHookEventJson(), message.getPayload());
             return null;
         });
+
+        counterService.increment("event_forwarded_to{target=awssqs-compressed}");
 
         replayAll();
         webHookEventForwarder.publish(getBaseWebHookEvent());
@@ -127,6 +141,8 @@ public class AwsSqsWebHookEventForwarderTest implements DomainTestSupport
             return null;
         });
 
+        counterService.increment("event_forwarded_to{target=awssqs-compressed}");
+
         objectMapper.writeValueAsString(anyObject(WebHookEvent.class));
         expectLastCall().andReturn(getCompressedWebHookEventJson());
 
@@ -138,6 +154,8 @@ public class AwsSqsWebHookEventForwarderTest implements DomainTestSupport
             assertEquals(getCompressedWebHookEventJson(), message.getPayload());
             return null;
         });
+
+        counterService.increment("event_forwarded_to{target=awssqs-compressed}");
 
         replayAll();
         webHookEventForwarder.publish(getCompleteWebHookEvent());
@@ -151,6 +169,7 @@ public class AwsSqsWebHookEventForwarderTest implements DomainTestSupport
         setInternalState(webHookEventForwarder, "compressedQueues", Arrays.asList());
 
         queueMessagingTemplate.send(eq("original1"), anyObject(Message.class));
+        counterService.increment("event_forwarded_to{target=awssqs-original}");
 
         replayAll();
         webHookEventForwarder.publish(getCompleteWebHookEvent());
@@ -164,7 +183,10 @@ public class AwsSqsWebHookEventForwarderTest implements DomainTestSupport
         setInternalState(webHookEventForwarder, "compressedQueues", Arrays.asList());
 
         queueMessagingTemplate.send(eq("original1"), anyObject(Message.class));
+        counterService.increment("event_forwarded_to{target=awssqs-original}");
+
         queueMessagingTemplate.send(eq("original2"), anyObject(Message.class));
+        counterService.increment("event_forwarded_to{target=awssqs-original}");
 
         replayAll();
         webHookEventForwarder.publish(getCompleteWebHookEvent());
@@ -188,6 +210,8 @@ public class AwsSqsWebHookEventForwarderTest implements DomainTestSupport
             assertEquals(getCompressedWebHookEventJson(), message.getPayload());
             return null;
         });
+
+        counterService.increment("event_forwarded_to{target=awssqs-compressed}");
 
         replayAll();
         webHookEventForwarder.publish(getCompleteWebHookEvent());

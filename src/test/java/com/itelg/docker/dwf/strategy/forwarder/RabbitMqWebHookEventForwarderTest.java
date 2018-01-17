@@ -17,6 +17,7 @@ import org.powermock.api.easymock.annotation.MockStrict;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.boot.actuate.metrics.CounterService;
 
 import com.itelg.docker.dwf.DomainTestSupport;
 import com.itelg.docker.dwf.domain.WebHookEvent;
@@ -32,11 +33,15 @@ public class RabbitMqWebHookEventForwarderTest implements DomainTestSupport
     @MockStrict
     private RabbitTemplate webHookEventCompressedTemplate;
 
+    @MockStrict
+    private CounterService counterService;
+
     @Before
     public void before()
     {
         setInternalState(webHookEventForwarder, "webHookEventOriginalTemplate", webHookEventOriginalTemplate);
         setInternalState(webHookEventForwarder, "webHookEventCompressedTemplate", webHookEventCompressedTemplate);
+        setInternalState(webHookEventForwarder, counterService);
     }
 
     @Test
@@ -49,6 +54,8 @@ public class RabbitMqWebHookEventForwarderTest implements DomainTestSupport
             assertNull(webhookEvent.getOriginalJson());
             return null;
         });
+
+        counterService.increment("event_forwarded_to{target=rabbitmq-compressed}");
 
         replayAll();
         webHookEventForwarder.publish(getBaseWebHookEvent());
@@ -67,6 +74,8 @@ public class RabbitMqWebHookEventForwarderTest implements DomainTestSupport
             return null;
         });
 
+        counterService.increment("event_forwarded_to{target=rabbitmq-original}");
+
         webHookEventCompressedTemplate.convertAndSend(anyObject(WebHookEvent.class));
         expectLastCall().andAnswer(() ->
         {
@@ -74,6 +83,8 @@ public class RabbitMqWebHookEventForwarderTest implements DomainTestSupport
             assertNull(webhookEvent.getOriginalJson());
             return null;
         });
+
+        counterService.increment("event_forwarded_to{target=rabbitmq-compressed}");
 
         replayAll();
         webHookEventForwarder.publish(getCompleteWebHookEvent());
