@@ -53,7 +53,6 @@ public class DefaultWebHookEventServiceTest implements DomainTestSupport
     public void testPublishEvent()
     {
         counterService.increment("event_inbound_total");
-
         gaugeService.submit(eq("event_inbound_last_timestamp"), anyDouble());
 
         webHookEventForwarder1.publish(anyObject(WebHookEvent.class));
