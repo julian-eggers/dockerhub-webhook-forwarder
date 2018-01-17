@@ -9,6 +9,8 @@ public class Metrics
 
     public static final String EVENT_INBOUND_TOTAL = "event_inbound_total";
 
+    public static final String EVENT_INBOUND_LAST_TIMESTAMP = "event_inbound_last_timestamp";
+
     public static final String FORWARDED_TO_TOTAL = "event_forwarded_total";
 
     public String inbound(String source)

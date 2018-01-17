@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.metrics.CounterService;
+import org.springframework.boot.actuate.metrics.GaugeService;
 import org.springframework.stereotype.Service;
 
 import com.itelg.docker.dwf.domain.WebHookEvent;
@@ -20,10 +21,14 @@ public class DefaultWebHookEventService implements WebHookEventService
     @Autowired
     private CounterService counterService;
 
+    @Autowired
+    private GaugeService gaugeService;
+
     @Override
     public void publishEvent(WebHookEvent webHookEvent)
     {
         counterService.increment(Metrics.EVENT_INBOUND_TOTAL);
+        gaugeService.submit(Metrics.EVENT_INBOUND_LAST_TIMESTAMP, System.currentTimeMillis());
 
         for (WebHookEventForwarder forwarder : webhookEventForwarders)
         {
