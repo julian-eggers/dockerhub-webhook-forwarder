@@ -2,6 +2,7 @@ package com.itelg.docker.dwf.rest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.actuate.metrics.CounterService;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.itelg.docker.dwf.domain.WebHookEvent;
+import com.itelg.docker.dwf.metrics.Metrics;
 import com.itelg.docker.dwf.parser.WebhookEventParser;
 import com.itelg.docker.dwf.rest.domain.AccessDeniedException;
 import com.itelg.docker.dwf.service.WebHookEventService;
@@ -23,6 +25,9 @@ public class WebhookEventRestController
     @Autowired
     private WebhookEventParser webhookEventParser;
 
+    @Autowired
+    private CounterService counterService;
+
     @Value("${request.token}")
     private String token;
 
@@ -32,6 +37,7 @@ public class WebhookEventRestController
         {
             if (!token.equals(requestToken))
             {
+                counterService.increment(Metrics.REST_AUTHENTICATION_FAILED_TOTAL);
                 throw new AccessDeniedException();
             }
         }
@@ -43,6 +49,7 @@ public class WebhookEventRestController
         valideToken(token);
         WebHookEvent event = webhookEventParser.parse(json);
         webHookEventService.publishEvent(event);
+        counterService.increment(Metrics.inbound("WebHookEvent"));
         return event;
     }
 
@@ -59,6 +66,7 @@ public class WebhookEventRestController
         event.setTag(tag);
         event.setImage(event.getNamespace() + "/" + event.getRepositoryName() + ":" + event.getTag());
         webHookEventService.publishEvent(event);
+        counterService.increment(Metrics.inbound("force"));
         return event;
     }
 }

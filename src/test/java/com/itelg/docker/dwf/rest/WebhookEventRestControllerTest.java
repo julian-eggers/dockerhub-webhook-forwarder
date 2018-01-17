@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.easymock.annotation.MockStrict;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.springframework.boot.actuate.metrics.CounterService;
 
 import com.itelg.docker.dwf.DomainTestSupport;
 import com.itelg.docker.dwf.domain.WebHookEvent;
@@ -32,6 +33,9 @@ public class WebhookEventRestControllerTest implements DomainTestSupport
     @MockStrict
     private WebHookEventService webhookEventService;
 
+    @MockStrict
+    private CounterService counterService;
+
     @Before
     public void before()
     {
@@ -45,6 +49,8 @@ public class WebhookEventRestControllerTest implements DomainTestSupport
         expectLastCall().andReturn(getCompleteWebHookEvent());
 
         webhookEventService.publishEvent(EasyMock.anyObject(WebHookEvent.class));
+
+        counterService.increment("event_inbound{source=WebHookEvent}");
 
         replayAll();
         WebHookEvent event = webhookEventRestController.receive(null, getOriginalWebHookEventJson());
@@ -61,6 +67,8 @@ public class WebhookEventRestControllerTest implements DomainTestSupport
     public void testForce() throws Exception
     {
         webhookEventService.publishEvent(EasyMock.anyObject(WebHookEvent.class));
+
+        counterService.increment("event_inbound{source=force}");
 
         replayAll();
         WebHookEvent event = webhookEventRestController.force(null, "jeggers", "dockerhub-webhook-forwarder", "latest");
