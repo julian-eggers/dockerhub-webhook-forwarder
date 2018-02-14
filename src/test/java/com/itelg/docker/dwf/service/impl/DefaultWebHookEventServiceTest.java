@@ -3,6 +3,8 @@ package com.itelg.docker.dwf.service.impl;
 import static org.easymock.EasyMock.anyDouble;
 import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.eq;
+import static org.easymock.EasyMock.expectLastCall;
+import static org.mockito.Mockito.mock;
 import static org.powermock.api.easymock.PowerMock.replayAll;
 import static org.powermock.api.easymock.PowerMock.verifyAll;
 import static org.powermock.reflect.Whitebox.setInternalState;
@@ -16,13 +18,14 @@ import org.junit.runner.RunWith;
 import org.powermock.api.easymock.annotation.Mock;
 import org.powermock.api.easymock.annotation.MockStrict;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.springframework.boot.actuate.metrics.CounterService;
-import org.springframework.boot.actuate.metrics.GaugeService;
 
 import com.itelg.docker.dwf.DomainTestSupport;
 import com.itelg.docker.dwf.domain.WebHookEvent;
 import com.itelg.docker.dwf.service.WebHookEventService;
 import com.itelg.docker.dwf.strategy.forwarder.WebHookEventForwarder;
+
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 
 @RunWith(PowerMockRunner.class)
 public class DefaultWebHookEventServiceTest implements DomainTestSupport
@@ -37,29 +40,32 @@ public class DefaultWebHookEventServiceTest implements DomainTestSupport
     private WebHookEventForwarder webHookEventForwarder2;
 
     @MockStrict
-    private CounterService counterService;
-
-    @Mock
-    private GaugeService gaugeService;
+    private MeterRegistry meterRegistry;
 
     @Before
     public void before()
     {
         setInternalState(webHookEventService, Arrays.asList(webHookEventForwarder1, webHookEventForwarder2));
-        setInternalState(webHookEventService, gaugeService);
     }
 
     @Test
     public void testPublishEvent()
     {
-        counterService.increment("event_inbound_total");
-        gaugeService.submit(eq("event_inbound_last_timestamp"), anyDouble());
+        meterRegistry.counter("event_inbound_total_sum");
+        expectLastCall().andReturn(mock(Counter.class));
+
+        meterRegistry.gauge(eq("event_inbound_last_timestamp"), anyDouble());
+        expectLastCall().andReturn(null);
 
         webHookEventForwarder1.publish(anyObject(WebHookEvent.class));
-        counterService.increment("event_forwarded_total");
+
+        meterRegistry.counter("event_forwardedto_total_sum");
+        expectLastCall().andReturn(mock(Counter.class));
 
         webHookEventForwarder2.publish(anyObject(WebHookEvent.class));
-        counterService.increment("event_forwarded_total");
+
+        meterRegistry.counter("event_forwardedto_total_sum");
+        expectLastCall().andReturn(mock(Counter.class));
 
         replayAll();
         webHookEventService.publishEvent(getCompleteWebHookEvent());
