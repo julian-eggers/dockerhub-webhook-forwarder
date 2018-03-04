@@ -5,7 +5,7 @@
   <name>dockerhub-webhook-forwarder</name>
   <description>Provides a dockerhub webhook-endpoint and forwards events to a rabbitmq.</description>
   <url>https://github.com/julian-eggers/dockerhub-webhook-forwarder</url>
-  <version>0.6.5-RELEASE</version>
+  <version>0.7.0-RELEASE</version>
 
   <properties>
     <!-- System -->
@@ -24,17 +24,10 @@
     <github-release-plugin.version>1.2.0</github-release-plugin.version>
   </properties>
 
-  <repositories>
-    <repository>
-      <id>spring-milestones</id>
-      <url>https://repo.spring.io/libs-milestone</url>
-    </repository>
-  </repositories>
-
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.0.0.RC1</version>
+    <version>2.0.0.RELEASE</version>
   </parent>
 
   <dependencies>

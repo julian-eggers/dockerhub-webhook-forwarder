@@ -18,11 +18,19 @@ pipeline
 
     stages
     {
+        stage('Info')
+        {
+            steps
+            {
+                sh 'mvn-jdk9 --version'
+            }
+        }
+        
         stage('Compile')
         {
             steps
             {
-                sh 'mvn clean compile test-compile'
+                sh 'mvn-jdk9 clean compile test-compile'
             }
         }
   
@@ -30,7 +38,7 @@ pipeline
         {
             steps
             {
-                sh 'mvn surefire:test'
+                sh 'mvn-jdk9 surefire:test'
             }
         }
   
@@ -38,7 +46,7 @@ pipeline
         {
             steps
             {
-                sh 'mvn failsafe:integration-test'
+                sh 'mvn-jdk9 failsafe:integration-test failsafe:verify'
             }
         }
         
@@ -48,7 +56,7 @@ pipeline
         
             steps
             {
-                sh 'mvn clean compile jar:jar spring-boot:repackage dockerfile:build dockerfile:tag@tag-latest dockerfile:tag@tag-version dockerfile:push@push-latest dockerfile:push@push-version github-release:release'
+                sh 'mvn-jdk9 clean compile jar:jar spring-boot:repackage dockerfile:build dockerfile:tag@tag-latest dockerfile:tag@tag-version dockerfile:push@push-latest dockerfile:push@push-version github-release:release'
             }
         }
     }
