@@ -24,13 +24,13 @@ public class DefaultWebHookEventService implements WebHookEventService
     @Override
     public void publishEvent(WebHookEvent webHookEvent)
     {
-        meterRegistry.counter(Metrics.EVENT_INBOUND_TOTAL_SUM).increment();
+        meterRegistry.counter(Metrics.EVENT_INBOUND_TOTAL_COUNT).increment();
         meterRegistry.gauge(Metrics.EVENT_INBOUND_LAST_TIMESTAMP, System.currentTimeMillis());
 
         for (WebHookEventForwarder forwarder : webhookEventForwarders)
         {
             forwarder.publish(webHookEvent);
-            meterRegistry.counter(Metrics.FORWARDEDTO_TOTAL_SUM).increment();
+            meterRegistry.counter(Metrics.FORWARDEDTO_TOTAL_COUNT).increment();
         }
     }
 }

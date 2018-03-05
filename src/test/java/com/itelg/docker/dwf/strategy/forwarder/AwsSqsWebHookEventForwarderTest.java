@@ -50,12 +50,12 @@ public class AwsSqsWebHookEventForwarderTest implements DomainTestSupport
 
         queueMessagingTemplate.send(eq("original1"), anyObject(Message.class));
 
-        meterRegistry.counter("event_forwardedto_bytarget_sum", "target", "awssqs-original");
+        meterRegistry.counter("event_forwardedto_bytarget_count", "target", "awssqs-original");
         expectLastCall().andReturn(mock(Counter.class));
 
         queueMessagingTemplate.send(eq("original2"), anyObject(Message.class));
 
-        meterRegistry.counter("event_forwardedto_bytarget_sum", "target", "awssqs-original");
+        meterRegistry.counter("event_forwardedto_bytarget_count", "target", "awssqs-original");
         expectLastCall().andReturn(mock(Counter.class));
 
         objectMapper.writeValueAsString(anyObject(WebHookEvent.class));
@@ -70,7 +70,7 @@ public class AwsSqsWebHookEventForwarderTest implements DomainTestSupport
             return null;
         });
 
-        meterRegistry.counter("event_forwardedto_bytarget_sum", "target", "awssqs-compressed");
+        meterRegistry.counter("event_forwardedto_bytarget_count", "target", "awssqs-compressed");
         expectLastCall().andReturn(mock(Counter.class));
 
         objectMapper.writeValueAsString(anyObject(WebHookEvent.class));
@@ -85,7 +85,7 @@ public class AwsSqsWebHookEventForwarderTest implements DomainTestSupport
             return null;
         });
 
-        meterRegistry.counter("event_forwardedto_bytarget_sum", "target", "awssqs-compressed");
+        meterRegistry.counter("event_forwardedto_bytarget_count", "target", "awssqs-compressed");
         expectLastCall().andReturn(mock(Counter.class));
 
         replayAll();
@@ -111,7 +111,7 @@ public class AwsSqsWebHookEventForwarderTest implements DomainTestSupport
             return null;
         });
 
-        meterRegistry.counter("event_forwardedto_bytarget_sum", "target", "awssqs-compressed");
+        meterRegistry.counter("event_forwardedto_bytarget_count", "target", "awssqs-compressed");
         expectLastCall().andReturn(mock(Counter.class));
 
         objectMapper.writeValueAsString(anyObject(WebHookEvent.class));
@@ -126,7 +126,7 @@ public class AwsSqsWebHookEventForwarderTest implements DomainTestSupport
             return null;
         });
 
-        meterRegistry.counter("event_forwardedto_bytarget_sum", "target", "awssqs-compressed");
+        meterRegistry.counter("event_forwardedto_bytarget_count", "target", "awssqs-compressed");
         expectLastCall().andReturn(mock(Counter.class));
 
         replayAll();
@@ -152,7 +152,7 @@ public class AwsSqsWebHookEventForwarderTest implements DomainTestSupport
             return null;
         });
 
-        meterRegistry.counter("event_forwardedto_bytarget_sum", "target", "awssqs-compressed");
+        meterRegistry.counter("event_forwardedto_bytarget_count", "target", "awssqs-compressed");
         expectLastCall().andReturn(mock(Counter.class));
 
         objectMapper.writeValueAsString(anyObject(WebHookEvent.class));
@@ -167,7 +167,7 @@ public class AwsSqsWebHookEventForwarderTest implements DomainTestSupport
             return null;
         });
 
-        meterRegistry.counter("event_forwardedto_bytarget_sum", "target", "awssqs-compressed");
+        meterRegistry.counter("event_forwardedto_bytarget_count", "target", "awssqs-compressed");
         expectLastCall().andReturn(mock(Counter.class));
 
         replayAll();
@@ -183,7 +183,7 @@ public class AwsSqsWebHookEventForwarderTest implements DomainTestSupport
 
         queueMessagingTemplate.send(eq("original1"), anyObject(Message.class));
 
-        meterRegistry.counter("event_forwardedto_bytarget_sum", "target", "awssqs-original");
+        meterRegistry.counter("event_forwardedto_bytarget_count", "target", "awssqs-original");
         expectLastCall().andReturn(mock(Counter.class));
 
         replayAll();
@@ -199,12 +199,12 @@ public class AwsSqsWebHookEventForwarderTest implements DomainTestSupport
 
         queueMessagingTemplate.send(eq("original1"), anyObject(Message.class));
 
-        meterRegistry.counter("event_forwardedto_bytarget_sum", "target", "awssqs-original");
+        meterRegistry.counter("event_forwardedto_bytarget_count", "target", "awssqs-original");
         expectLastCall().andReturn(mock(Counter.class));
 
         queueMessagingTemplate.send(eq("original2"), anyObject(Message.class));
 
-        meterRegistry.counter("event_forwardedto_bytarget_sum", "target", "awssqs-original");
+        meterRegistry.counter("event_forwardedto_bytarget_count", "target", "awssqs-original");
         expectLastCall().andReturn(mock(Counter.class));
 
         replayAll();
@@ -230,7 +230,7 @@ public class AwsSqsWebHookEventForwarderTest implements DomainTestSupport
             return null;
         });
 
-        meterRegistry.counter("event_forwardedto_bytarget_sum", "target", "awssqs-compressed");
+        meterRegistry.counter("event_forwardedto_bytarget_count", "target", "awssqs-compressed");
         expectLastCall().andReturn(mock(Counter.class));
 
         replayAll();

@@ -40,7 +40,7 @@ public class AwsSqsWebHookEventForwarder implements WebHookEventForwarder
             if (StringUtils.hasText(queue) && StringUtils.hasText(webHookEvent.getOriginalJson()))
             {
                 queueMessagingTemplate.send(queue, MessageBuilder.withPayload(webHookEvent.getOriginalJson()).build());
-                meterRegistry.counter(Metrics.FORWARDEDTO_BYTARGET_SUM, "target", "awssqs-original").increment();
+                meterRegistry.counter(Metrics.FORWARDEDTO_BYTARGET_COUNT, "target", "awssqs-original").increment();
             }
         }
 
@@ -50,7 +50,7 @@ public class AwsSqsWebHookEventForwarder implements WebHookEventForwarder
             {
                 String json = toJson(webHookEvent.removeOriginalJson());
                 queueMessagingTemplate.send(queue, MessageBuilder.withPayload(json).build());
-                meterRegistry.counter(Metrics.FORWARDEDTO_BYTARGET_SUM, "target", "awssqs-compressed").increment();
+                meterRegistry.counter(Metrics.FORWARDEDTO_BYTARGET_COUNT, "target", "awssqs-compressed").increment();
             }
         }
     }

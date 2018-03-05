@@ -53,7 +53,7 @@ public class WebhookEventRestControllerTest implements DomainTestSupport
 
         webhookEventService.publishEvent(EasyMock.anyObject(WebHookEvent.class));
 
-        meterRegistry.counter("event_inbound_bysource_sum", "source", "WebHookEvent");
+        meterRegistry.counter("event_inbound_bysource_count", "source", "WebHookEvent");
         expectLastCall().andReturn(mock(Counter.class));
 
         replayAll();
@@ -72,7 +72,7 @@ public class WebhookEventRestControllerTest implements DomainTestSupport
     {
         webhookEventService.publishEvent(EasyMock.anyObject(WebHookEvent.class));
 
-        meterRegistry.counter("event_inbound_bysource_sum", "source", "force");
+        meterRegistry.counter("event_inbound_bysource_count", "source", "force");
         expectLastCall().andReturn(mock(Counter.class));
 
         replayAll();
@@ -110,7 +110,7 @@ public class WebhookEventRestControllerTest implements DomainTestSupport
     {
         setInternalState(webhookEventRestController, "token", "321");
 
-        meterRegistry.counter("rest_authentication_failed_total");
+        meterRegistry.counter("rest_authentication_failed_total_count");
         expectLastCall().andReturn(mock(Counter.class));
 
         replayAll();

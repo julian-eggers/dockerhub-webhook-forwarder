@@ -58,7 +58,7 @@ public class RabbitMqWebHookEventForwarderTest implements DomainTestSupport
             return null;
         });
 
-        meterRegistry.counter("event_forwardedto_bytarget_sum", "target", "rabbitmq-compressed");
+        meterRegistry.counter("event_forwardedto_bytarget_count", "target", "rabbitmq-compressed");
         expectLastCall().andReturn(mock(Counter.class));
 
         replayAll();
@@ -78,7 +78,7 @@ public class RabbitMqWebHookEventForwarderTest implements DomainTestSupport
             return null;
         });
 
-        meterRegistry.counter("event_forwardedto_bytarget_sum", "target", "rabbitmq-original");
+        meterRegistry.counter("event_forwardedto_bytarget_count", "target", "rabbitmq-original");
         expectLastCall().andReturn(mock(Counter.class));
 
         webHookEventCompressedTemplate.convertAndSend(anyObject(WebHookEvent.class));
@@ -89,7 +89,7 @@ public class RabbitMqWebHookEventForwarderTest implements DomainTestSupport
             return null;
         });
 
-        meterRegistry.counter("event_forwardedto_bytarget_sum", "target", "rabbitmq-compressed");
+        meterRegistry.counter("event_forwardedto_bytarget_count", "target", "rabbitmq-compressed");
         expectLastCall().andReturn(mock(Counter.class));
 
         replayAll();

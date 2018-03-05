@@ -51,7 +51,7 @@ public class DefaultWebHookEventServiceTest implements DomainTestSupport
     @Test
     public void testPublishEvent()
     {
-        meterRegistry.counter("event_inbound_total_sum");
+        meterRegistry.counter("event_inbound_total_count");
         expectLastCall().andReturn(mock(Counter.class));
 
         meterRegistry.gauge(eq("event_inbound_last_timestamp"), anyDouble());
@@ -59,12 +59,12 @@ public class DefaultWebHookEventServiceTest implements DomainTestSupport
 
         webHookEventForwarder1.publish(anyObject(WebHookEvent.class));
 
-        meterRegistry.counter("event_forwardedto_total_sum");
+        meterRegistry.counter("event_forwardedto_total_count");
         expectLastCall().andReturn(mock(Counter.class));
 
         webHookEventForwarder2.publish(anyObject(WebHookEvent.class));
 
-        meterRegistry.counter("event_forwardedto_total_sum");
+        meterRegistry.counter("event_forwardedto_total_count");
         expectLastCall().andReturn(mock(Counter.class));
 
         replayAll();

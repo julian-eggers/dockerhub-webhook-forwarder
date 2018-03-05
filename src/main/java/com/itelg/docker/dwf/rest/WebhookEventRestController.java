@@ -38,7 +38,7 @@ public class WebhookEventRestController
         {
             if (!token.equals(requestToken))
             {
-                meterRegistry.counter(Metrics.REST_AUTHENTICATION_FAILED_TOTAL).increment();
+                meterRegistry.counter(Metrics.REST_AUTHENTICATION_FAILED_TOTAL_COUNT).increment();
                 throw new AccessDeniedException();
             }
         }
@@ -50,7 +50,7 @@ public class WebhookEventRestController
         valideToken(token);
         WebHookEvent event = webhookEventParser.parse(json);
         webHookEventService.publishEvent(event);
-        meterRegistry.counter(Metrics.EVENT_INBOUND_BYSOURCE_SUM, "source", "WebHookEvent").increment();
+        meterRegistry.counter(Metrics.EVENT_INBOUND_BYSOURCE_COUNT, "source", "WebHookEvent").increment();
         return event;
     }
 
@@ -67,7 +67,7 @@ public class WebhookEventRestController
         event.setTag(tag);
         event.setImage(event.getNamespace() + "/" + event.getRepositoryName() + ":" + event.getTag());
         webHookEventService.publishEvent(event);
-        meterRegistry.counter(Metrics.EVENT_INBOUND_BYSOURCE_SUM, "source", "force").increment();
+        meterRegistry.counter(Metrics.EVENT_INBOUND_BYSOURCE_COUNT, "source", "force").increment();
         return event;
     }
 }

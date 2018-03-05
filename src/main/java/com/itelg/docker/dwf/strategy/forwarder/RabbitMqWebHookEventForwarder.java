@@ -27,10 +27,10 @@ public class RabbitMqWebHookEventForwarder implements WebHookEventForwarder
         if (StringUtils.hasText(webHookEvent.getOriginalJson()))
         {
             webHookEventOriginalTemplate.send(MessageBuilder.withBody(webHookEvent.getOriginalJson().getBytes()).setContentType("application/json").build());
-            meterRegistry.counter(Metrics.FORWARDEDTO_BYTARGET_SUM, "target", "rabbitmq-original").increment();
+            meterRegistry.counter(Metrics.FORWARDEDTO_BYTARGET_COUNT, "target", "rabbitmq-original").increment();
         }
 
         webHookEventCompressedTemplate.convertAndSend(webHookEvent.removeOriginalJson());
-        meterRegistry.counter(Metrics.FORWARDEDTO_BYTARGET_SUM, "target", "rabbitmq-compressed").increment();
+        meterRegistry.counter(Metrics.FORWARDEDTO_BYTARGET_COUNT, "target", "rabbitmq-compressed").increment();
     }
 }
