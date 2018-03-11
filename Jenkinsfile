@@ -52,7 +52,7 @@ pipeline
         
         stage('Release')
         {
-            when { branch "0.7.0-RELEASE" }
+            when { branch "master" }
         
             steps
             {
