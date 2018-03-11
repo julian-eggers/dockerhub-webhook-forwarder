@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.actuate.metrics.CounterService;
 import org.springframework.cloud.aws.messaging.core.QueueMessagingTemplate;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.util.StringUtils;
@@ -13,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itelg.docker.dwf.domain.WebHookEvent;
 import com.itelg.docker.dwf.metrics.Metrics;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.SneakyThrows;
 
 public class AwsSqsWebHookEventForwarder implements WebHookEventForwarder
@@ -30,7 +30,7 @@ public class AwsSqsWebHookEventForwarder implements WebHookEventForwarder
     private ObjectMapper objectMapper;
 
     @Autowired
-    private CounterService counterService;
+    private MeterRegistry meterRegistry;
 
     @Override
     public void publish(WebHookEvent webHookEvent)
@@ -40,7 +40,7 @@ public class AwsSqsWebHookEventForwarder implements WebHookEventForwarder
             if (StringUtils.hasText(queue) && StringUtils.hasText(webHookEvent.getOriginalJson()))
             {
                 queueMessagingTemplate.send(queue, MessageBuilder.withPayload(webHookEvent.getOriginalJson()).build());
-                counterService.increment(Metrics.forwardedTo("awssqs-original"));
+                meterRegistry.counter(Metrics.FORWARDEDTO_BYTARGET_COUNT, "target", "awssqs-original").increment();
             }
         }
 
@@ -50,7 +50,7 @@ public class AwsSqsWebHookEventForwarder implements WebHookEventForwarder
             {
                 String json = toJson(webHookEvent.removeOriginalJson());
                 queueMessagingTemplate.send(queue, MessageBuilder.withPayload(json).build());
-                counterService.increment(Metrics.forwardedTo("awssqs-compressed"));
+                meterRegistry.counter(Metrics.FORWARDEDTO_BYTARGET_COUNT, "target", "awssqs-compressed").increment();
             }
         }
     }
