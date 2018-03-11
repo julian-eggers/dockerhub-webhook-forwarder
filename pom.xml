@@ -5,7 +5,7 @@
   <name>dockerhub-webhook-forwarder</name>
   <description>Provides a dockerhub webhook-endpoint and forwards events to a rabbitmq.</description>
   <url>https://github.com/julian-eggers/dockerhub-webhook-forwarder</url>
-  <version>0.7.0-SNAPSHOT</version>
+  <version>0.7.0-RELEASE</version>
 
   <properties>
     <!-- System -->
