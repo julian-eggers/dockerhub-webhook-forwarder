@@ -54,3 +54,17 @@ You can choose between the [original event](https://docs.docker.com/docker-hub/w
 | --webhookevent.forward.awssqs.queues.compressed | no |  |  |
 
 You have to specify at least one queue.
+
+
+
+## Build & Release
+
+### Build
+```
+mvn clean package dockerfile:build
+```
+
+### Release
+```
+mvn clean package dockerfile:build dockerfile:tag@tag-latest dockerfile:tag@tag-version dockerfile:push@push-latest dockerfile:push@push-version github-release:release
+```
